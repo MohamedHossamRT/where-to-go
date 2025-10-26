@@ -1,19 +1,30 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, X } from "lucide-react";
+import { MapPin, Menu, X, Plus } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-
-const navigation = [
-  { name: "Home", href: "/" },
-  { name: "Listings", href: "/listings" },
-  { name: "Contact", href: "/contact" },
-  { name: "Dashboard", href: "/dashboard" },
-];
+import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserAvatar } from "@/components/UserAvatar";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isOwner, signOut } = useAuth();
+  const { t } = useTranslation();
+
+  const navigation = [
+    { name: t('nav.home'), href: "/" },
+    { name: t('nav.listings'), href: "/listings" },
+    { name: t('nav.contact'), href: "/contact" },
+  ];
+
+  if (isOwner) {
+    navigation.push({ name: t('nav.myListings'), href: "/owner/my-listings" });
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,9 +54,33 @@ export function Header() {
           ))}
         </div>
 
-        <div className="hidden md:flex md:items-center md:space-x-4">
-          <Button variant="outline" size="sm">Sign In</Button>
-          <Button size="sm">Add Listing</Button>
+        <div className="hidden md:flex md:items-center md:space-x-2 rtl:space-x-reverse">
+          <LanguageSwitcher />
+          <ThemeToggle />
+          
+          {user ? (
+            <>
+              {isOwner && (
+                <Link to="/owner/add-listing">
+                  <Button size="sm">
+                    <Plus className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
+                    {t('owner.addNew')}
+                  </Button>
+                </Link>
+              )}
+              <UserAvatar user={user} />
+              <SignOutButton />
+            </>
+          ) : (
+            <>
+              <Link to="/signin">
+                <Button variant="outline" size="sm">{t('nav.signin')}</Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm">{t('nav.signup')}</Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -80,9 +115,43 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+            <div className="flex items-center justify-between py-2">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
             <div className="mt-4 space-y-2">
-              <Button variant="outline" className="w-full">Sign In</Button>
-              <Button className="w-full">Add Listing</Button>
+              {user ? (
+                <>
+                  {isOwner && (
+                    <Link to="/owner/add-listing">
+                      <Button className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                        <Plus className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
+                        {t('owner.addNew')}
+                      </Button>
+                    </Link>
+                  )}
+                  <div className="flex items-center gap-3 p-3 border rounded-md">
+                    <UserAvatar user={user} />
+                    <div className="flex-1 text-sm">
+                      <p className="font-medium">{user.user_metadata?.full_name || user.email?.split('@')[0]}</p>
+                      <p className="text-muted-foreground text-xs">{user.email}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to="/signin">
+                    <Button variant="outline" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                      {t('nav.signin')}
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                      {t('nav.signup')}
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
