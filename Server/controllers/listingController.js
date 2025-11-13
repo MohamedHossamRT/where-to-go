@@ -3,15 +3,15 @@ const Place = require("../models/placeModel");
 
 // Admin actions
 
-  // Create listing (admin) 
+// Create listing (admin)
 exports.adminCreateListing = async (req, res) => {
-   try {
+  try {
     const newPlace = await Place.create(req.body);
 
     const listing = await Listing.create({
       place: newPlace._id,
       owner: req.user._id, // admin is owner
-      status: "accepted",  // auto-approved
+      status: "accepted", // auto-approved
     });
 
     res.status(201).json({
@@ -19,11 +19,13 @@ exports.adminCreateListing = async (req, res) => {
       listing,
     });
   } catch (error) {
-    res.status(400).json({ message: "Failed to create listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to create listing", error: error.message });
   }
 };
 
-  // Get all listings (admin)
+// Get all listings (admin)
 exports.getAllListings = async (req, res) => {
   try {
     const listings = await Listing.find()
@@ -36,7 +38,9 @@ exports.getAllListings = async (req, res) => {
       data: listings,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch listings", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch listings", error: error.message });
   }
 };
 
@@ -46,11 +50,15 @@ exports.updateListing = async (req, res) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing) return res.status(404).json({ message: "Listing not found" });
 
-    const place = await Place.findByIdAndUpdate(listing.place, req.body, { new: true });
+    const place = await Place.findByIdAndUpdate(listing.place, req.body, {
+      new: true,
+    });
 
     res.status(200).json({ message: "Listing updated", listing, place });
   } catch (error) {
-    res.status(400).json({ message: "Failed to update listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to update listing", error: error.message });
   }
 };
 
@@ -65,7 +73,9 @@ exports.deleteListing = async (req, res) => {
 
     res.status(200).json({ message: "Listing deleted" });
   } catch (error) {
-    res.status(400).json({ message: "Failed to delete listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to delete listing", error: error.message });
   }
 };
 
@@ -84,7 +94,7 @@ exports.updateListingStatus = async (req, res) => {
       await Listing.findByIdAndDelete(req.params.id);
 
       return res.status(200).json({
-        message: "Listing rejected and deleted successfully"
+        message: "Listing rejected and deleted successfully",
       });
     }
 
@@ -96,12 +106,12 @@ exports.updateListingStatus = async (req, res) => {
 
     res.status(200).json({
       message: "Listing status updated successfully",
-      listing
+      listing,
     });
   } catch (error) {
     res.status(400).json({
       message: "Failed to update listing status",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -124,7 +134,9 @@ exports.createListing = async (req, res) => {
       listing,
     });
   } catch (error) {
-    res.status(400).json({ message: "Failed to create listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to create listing", error: error.message });
   }
 };
 
@@ -135,13 +147,19 @@ exports.updateOwnListing = async (req, res) => {
     if (!listing) return res.status(404).json({ message: "Listing not found" });
 
     if (listing.owner.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "You can only update your own listings" });
+      return res
+        .status(403)
+        .json({ message: "You can only update your own listings" });
 
     if (listing.status !== "accepted")
-      return res.status(403).json({ message: "Listing must be accepted to edit" });
+      return res
+        .status(403)
+        .json({ message: "Listing must be accepted to edit" });
 
     // Update place details
-    const place = await Place.findByIdAndUpdate(listing.place, req.body, { new: true });
+    const place = await Place.findByIdAndUpdate(listing.place, req.body, {
+      new: true,
+    });
 
     // Set needsReview flag to true so admin knows
     listing.needsReview = true;
@@ -150,10 +168,12 @@ exports.updateOwnListing = async (req, res) => {
     res.status(200).json({
       message: "Listing updated, pending admin review",
       listing,
-      place
+      place,
     });
   } catch (error) {
-    res.status(400).json({ message: "Failed to update listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to update listing", error: error.message });
   }
 };
 
@@ -164,26 +184,36 @@ exports.deleteOwnListing = async (req, res) => {
     if (!listing) return res.status(404).json({ message: "Listing not found" });
 
     if (listing.owner.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "You can only delete your own listings" });
+      return res
+        .status(403)
+        .json({ message: "You can only delete your own listings" });
 
     if (listing.status !== "accepted")
-    return res.status(403).json({ message: "Listing must be accepted to delete" });
+      return res
+        .status(403)
+        .json({ message: "Listing must be accepted to delete" });
 
     await Place.findByIdAndDelete(listing.place);
     await Listing.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ message: "Listing deleted" });
   } catch (error) {
-    res.status(400).json({ message: "Failed to delete listing", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Failed to delete listing", error: error.message });
   }
 };
 
 // Get all listings of the logged-in user
 exports.getMyListings = async (req, res) => {
   try {
-    const listings = await Listing.find({ owner: req.user._id }).populate("place");
+    const listings = await Listing.find({ owner: req.user._id }).populate(
+      "place"
+    );
     res.status(200).json({ message: "Success", data: listings });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch listings", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch listings", error: error.message });
   }
 };

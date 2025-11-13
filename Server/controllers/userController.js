@@ -1,15 +1,13 @@
-// controllers/userController.js
 const mongoose = require("mongoose");
-const User = require("../models/User");
-const Place = require("../models/placeModel"); 
-const Listing = require("../models/listingModel"); 
+const User = require("../models/userModel");
+const Place = require("../models/placeModel");
 
 // Admin actions
 exports.addUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     const user = await User.create({ name, email, password, role });
-    res.status(201).json({ message: 'User created successfully', user });
+    res.status(201).json({ message: "User created successfully", user });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -17,9 +15,11 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User updated', user });
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User updated", user });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -28,8 +28,8 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User deleted' });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User deleted" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -44,14 +44,11 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-
 // User actions
 
 // helper to return populated user doc
 const getPopulatedUser = async (userId) => {
-  return await User.findById(userId)
-    .populate("favorites") 
-    .populate("history");  
+  return await User.findById(userId).populate("favorites").populate("history");
 };
 
 // GET CURRENT USER PROFILE (with populated favorites & history)
@@ -105,7 +102,7 @@ exports.getFavorites = async (req, res) => {
     if (!req.user || !req.user._id)
       return res.status(401).json({ message: "Unauthorized" });
 
-    const user = await User.findById(req.user._id).populate("favorites"); 
+    const user = await User.findById(req.user._id).populate("favorites");
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -125,7 +122,7 @@ exports.addFavorite = async (req, res) => {
     if (!req.user || !req.user._id)
       return res.status(401).json({ message: "Unauthorized" });
 
-    const { placeId } = req.body; 
+    const { placeId } = req.body;
     if (!placeId) return res.status(400).json({ message: "placeId required" });
     if (!mongoose.Types.ObjectId.isValid(placeId))
       return res.status(400).json({ message: "Invalid placeId" });
@@ -200,7 +197,7 @@ exports.addToHistory = async (req, res) => {
       req.user._id,
       { $push: { history: { $each: [place._id], $position: 0 } } },
       { new: true }
-    ).populate("history"); ;
+    ).populate("history");
 
     if (updatedUser && updatedUser.history.length > 50) {
       const keepIds = updatedUser.history

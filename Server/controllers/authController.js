@@ -1,13 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/userModel");
 
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ message: "Email already registered" });
+    if (existing)
+      return res.status(400).json({ message: "Email already registered" });
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -16,11 +17,11 @@ exports.signup = async (req, res) => {
       email,
       password: hashed,
       role: role || "user",
-       profilePicture: req.file ? req.file.path : "",
+      profilePicture: req.file ? req.file.path : "",
     });
 
     await user.save();
-   
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,

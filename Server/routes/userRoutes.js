@@ -1,22 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
-const { protect,restrictTo } = require("../middlewares/authMiddleware");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 
-// Protected routes
-router.post('/', protect, restrictTo('admin'), userController.addUser);
-router.put('/:id', protect, restrictTo('admin'), userController.updateUser);
-router.delete('/:id', protect, restrictTo('admin'), userController.deleteUser);
+// Admin Routes
+router
+  .route("/")
+  .get(protect, restrictTo("admin"), userController.getAllUsers)
+  .post(protect, restrictTo("admin"), userController.addUser);
+router
+  .route("/:id")
+  .put(protect, restrictTo("admin"), userController.updateUser)
+  .delete(protect, restrictTo("admin"), userController.deleteUser);
 
+// User profile routes
 router.get("/me", protect, userController.getMyProfile);
-router.get("/favorites", protect, userController.getFavorites);
-
 router.put("/update", protect, userController.updateProfile);
 
-router.post("/favorites", protect, userController.addFavorite);
+// Favorites routes
+router
+  .route("/favorites")
+  .get(protect, userController.getFavorites)
+  .post(protect, userController.addFavorite);
 router.delete("/favorites/:listingId", protect, userController.removeFavorite);
 
-router.post("/history", protect, userController.addToHistory);
-router.delete("/history", protect, userController.clearHistory);
+// History routes
+router
+  .route("/history")
+  .post(protect, userController.addToHistory)
+  .delete(protect, userController.clearHistory);
 
 module.exports = router;

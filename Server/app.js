@@ -9,14 +9,14 @@ app.use(cors());
 app.use(morgan("dev"));
 
 // Routes
-const placesRoutes = require("./routes/placeRoutes");
+const placeRoutes = require("./routes/placeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const listing = require("./routes/listingRoute");
+const listingRoutes = require("./routes/listingRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/v1/places", placesRoutes);
-app.use("/api/listing", listing);
+app.use("/api/v1/places", placeRoutes);
+app.use("/api/listing", listingRoutes);
 
 module.exports = app;
