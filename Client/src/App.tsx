@@ -8,7 +8,8 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Listings from "./pages/Listings";
-import ListingDetail from "./pages/ListingDetail";
+// import ListingDetail from "./pages/ListingDetail";
+import ListingDetails from "./pages/ListingDetail";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -34,7 +35,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/listings" element={<Listings />} />
-              <Route path="/listing/:slug" element={<ListingDetail />} />
+              <Route path="/listing/:id" element={<ListingDetails />} />
               <Route path="/contact" element={<Contact />} />
               
               {/* Auth Routes */}
