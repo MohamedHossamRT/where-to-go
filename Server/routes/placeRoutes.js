@@ -10,6 +10,7 @@ router = express.Router();
 
 router.get("/search", protect, placeController.getFilteredPlaces);
 router.route("/:id").get(protect, placeController.getPlace);
-router.get("/", protect, restrictTo("admin"), placeController.getAllPlaces);
+router.get("/", placeController.getAllPlaces);
+// router.get("/", protect, restrictTo("admin"), placeController.getAllPlaces);
 
 module.exports = router;

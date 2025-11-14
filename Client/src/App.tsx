@@ -8,7 +8,6 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Listings from "./pages/Listings";
-// import ListingDetail from "./pages/ListingDetail";
 import ListingDetails from "./pages/ListingDetail";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
@@ -16,7 +15,6 @@ import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
-import ForgotPassword from "./pages/auth/ForgotPassword";
 import MyListings from "./pages/owner/MyListings";
 import AddListing from "./pages/owner/AddListing";
 import NotFound from "./pages/NotFound";
@@ -37,43 +35,57 @@ const App = () => (
               <Route path="/listings" element={<Listings />} />
               <Route path="/listing/:id" element={<ListingDetails />} />
               <Route path="/contact" element={<Contact />} />
-              
+
               {/* Auth Routes */}
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              
+
               {/* User Routes */}
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/favorites" element={
-                <ProtectedRoute>
-                  <Favorites />
-                </ProtectedRoute>
-              } />
-              
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/favorites"
+                element={
+                  <ProtectedRoute>
+                    <Favorites />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Admin Routes */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute requireAdmin>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute requireAdmin>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Owner Routes */}
-              <Route path="/owner/my-listings" element={
-                <ProtectedRoute requireOwner>
-                  <MyListings />
-                </ProtectedRoute>
-              } />
-              <Route path="/owner/add-listing" element={
-                <ProtectedRoute requireOwner>
-                  <AddListing />
-                </ProtectedRoute>
-              } />
-              
+              <Route
+                path="/owner/my-listings"
+                element={
+                  <ProtectedRoute requireOwner>
+                    <MyListings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/owner/add-listing"
+                element={
+                  <ProtectedRoute requireOwner>
+                    <AddListing />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -2,15 +2,12 @@ import { Button } from "@/components/ui/button";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ListingCard } from "@/components/ListingCard";
 import { SearchFilters } from "@/components/SearchFilters";
-import { categories, listings } from "@/data/mockData";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ArrowRight, MapPin, Users, Award, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
-  const featuredListings = listings.filter((l) => l.isFeatured).slice(0, 6);
-
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -24,8 +21,8 @@ export default function Home() {
               <span className="block text-primary">Great Places</span>
             </h1>
             <p className="mb-8 text-lg text-muted-foreground md:text-xl">
-              Find the best restaurants, hotels, shops, and services in your area. 
-              Explore thousands of verified listings near you.
+              Find the best restaurants, hotels, shops, and services in your
+              area. Explore thousands of verified listings near you.
             </p>
 
             <div className="mx-auto max-w-2xl">
@@ -50,7 +47,6 @@ export default function Home() {
               <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                 <MapPin className="h-6 w-6 text-primary" />
               </div>
-              <div className="text-3xl font-bold">{listings.length}+</div>
               <div className="text-sm text-muted-foreground">Listings</div>
             </div>
             <div className="text-center">
@@ -90,12 +86,6 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {categories.slice(0, 8).map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
-
           <div className="mt-8 text-center">
             <Link to="/listings">
               <Button size="lg">
@@ -119,11 +109,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredListings.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
 
           <div className="mt-8 text-center">
             <Link to="/listings">
@@ -144,14 +130,18 @@ export default function Home() {
               List Your Business Today
             </h2>
             <p className="mb-8 text-lg opacity-90">
-              Join thousands of businesses already on WhereToGo. 
-              Reach more customers and grow your presence.
+              Join thousands of businesses already on WhereToGo. Reach more
+              customers and grow your presence.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" variant="secondary">
                 Add Your Listing
               </Button>
-              <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white/10">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white bg-transparent text-white hover:bg-white/10"
+              >
                 Learn More
               </Button>
             </div>

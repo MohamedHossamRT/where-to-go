@@ -1,106 +1,112 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useQuery } from '@tanstack/react-query';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-interface AddListingFormData {
-  title: string;
-  description: string;
-  category: string;
-  address: string;
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+const LISTINGS_API_URL = "http://127.0.0.1:5000/api/listings";
+
+interface Listing {
+  _id: string;
+  name: string;
   city: string;
-  state: string;
-  lat: number;
-  lng: number;
-  price: number;
-  price_label?: string;
+  category: string[];
   phone?: string;
-  email?: string;
+  priceLevel?: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
+  address?: string;
   website?: string;
-  image: string;
+  status: "pending" | "accepted" | "rejected";
 }
 
-export default function AddListing() {
+export default function MyListings() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const queryClient = useQueryClient();
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<AddListingFormData>();
-
-  // Fetch categories
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
+  const { data: listings = [], isLoading } = useQuery<Listing[]>({
+    queryKey: ["myListings", token],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      return data;
+      if (!token) return [];
+
+      const response = await fetch(`${LISTINGS_API_URL}/my`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch listings");
+      }
+
+      const data = await response.json();
+      return data.listings;
+    },
+    enabled: !!token,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (listingId: string) => {
+      if (!token) throw new Error("Not authenticated");
+
+      const response = await fetch(`${LISTINGS_API_URL}/${listingId}/own`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete listing");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myListings"] });
+      toast({
+        title: "Success",
+        description: "Listing deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
-  const onSubmit = async (data: AddListingFormData) => {
-    setIsLoading(true);
-
-    // Generate slug from title
-    const slug = data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
-    const { error } = await supabase.from('listings').insert({
-      owner_id: user?.id,
-      title: data.title,
-      slug: slug,
-      description: data.description,
-      category: data.category,
-      address: data.address,
-      city: data.city,
-      state: data.state,
-      lat: data.lat,
-      lng: data.lng,
-      price: data.price,
-      price_label: data.price_label,
-      phone: data.phone,
-      email: data.email,
-      website: data.website,
-      image: data.image,
-      rating: 0,
-      review_count: 0,
-    });
-
-    setIsLoading(false);
-
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: 'Success',
-        description: 'Listing created successfully',
-      });
-      navigate('/owner/my-listings');
-    }
+  const renderPriceLevel = (level?: number) => {
+    if (!level || level === 0) return "N/A";
+    return "$".repeat(level);
   };
 
   return (
@@ -109,191 +115,124 @@ export default function AddListing() {
 
       <div className="flex-1 bg-muted/30">
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold">{t('owner.addNew')}</h1>
-            <p className="text-muted-foreground">
-              Create a new listing for your business
-            </p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="mb-2 text-3xl font-bold">
+                {t("owner.myListings")}
+              </h1>
+              <p className="text-muted-foreground">
+                Manage your business listings
+              </p>
+            </div>
+            <Link to="/owner/add-listing">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                {t("owner.addNew")}
+              </Button>
+            </Link>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Listing Details</CardTitle>
+              <CardTitle>Your Listings</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Title *</Label>
-                    <Input
-                      id="title"
-                      {...register('title', { required: 'Title is required' })}
-                    />
-                    {errors.title && (
-                      <p className="text-sm text-destructive">{errors.title.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category *</Label>
-                    <Select
-                      value={selectedCategory}
-                      onValueChange={(value) => {
-                        setSelectedCategory(value);
-                        setValue('category', value);
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.name}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <input type="hidden" {...register('category', { required: true })} />
-                  </div>
+              {isLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description *</Label>
-                  <Textarea
-                    id="description"
-                    rows={4}
-                    {...register('description', { required: 'Description is required' })}
-                  />
-                  {errors.description && (
-                    <p className="text-sm text-destructive">{errors.description.message}</p>
-                  )}
+              ) : listings.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground">
+                  <p>You haven't created any listings yet.</p>
+                  <Link to="/owner/add-listing">
+                    <Button className="mt-4">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Your First Listing
+                    </Button>
+                  </Link>
                 </div>
-
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Address *</Label>
-                    <Input
-                      id="address"
-                      {...register('address', { required: 'Address is required' })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      {...register('city', { required: 'City is required' })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
-                      {...register('state', { required: 'State is required' })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="lat">Latitude *</Label>
-                    <Input
-                      id="lat"
-                      type="number"
-                      step="any"
-                      {...register('lat', { required: 'Latitude is required', valueAsNumber: true })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="lng">Longitude *</Label>
-                    <Input
-                      id="lng"
-                      type="number"
-                      step="any"
-                      {...register('lng', { required: 'Longitude is required', valueAsNumber: true })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Price *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      {...register('price', { required: 'Price is required', valueAsNumber: true })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="price_label">Price Label</Label>
-                    <Input
-                      id="price_label"
-                      placeholder="e.g., per person, per night"
-                      {...register('price_label')}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      {...register('phone')}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register('email')}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      type="url"
-                      {...register('website')}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="image">Image URL *</Label>
-                  <Input
-                    id="image"
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    {...register('image', { required: 'Image URL is required' })}
-                  />
-                  {errors.image && (
-                    <p className="text-sm text-destructive">{errors.image.message}</p>
-                  )}
-                </div>
-
-                <div className="flex gap-4">
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? t('common.loading') : t('common.submit')}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => navigate('/owner/my-listings')}
-                  >
-                    {t('common.cancel')}
-                  </Button>
-                </div>
-              </form>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Price Level</TableHead>
+                      <TableHead>Rating</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {listings.map((listing) => (
+                      <TableRow key={listing._id}>
+                        <TableCell className="font-medium">
+                          {listing.name}
+                        </TableCell>
+                        <TableCell>{listing.category.join(", ")}</TableCell>
+                        <TableCell>{listing.city}</TableCell>
+                        <TableCell>
+                          {renderPriceLevel(listing.priceLevel)}
+                        </TableCell>
+                        <TableCell>
+                          {listing.ratingsAverage
+                            ? `${listing.ratingsAverage} ★`
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex rounded-full px-2 py-1 text-xs capitalize ${
+                              listing.status === "accepted"
+                                ? "bg-success/10 text-success"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {listing.status}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Link to={`/owner/edit-listing/${listing._id}`}>
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Delete Listing
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete this
+                                    listing? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() =>
+                                      deleteMutation.mutate(listing._id)
+                                    }
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useFilterStore } from "@/store/useFilterStore";
-import { categories } from "@/data/mockData";
 
 export function SearchFilters() {
   const [open, setOpen] = useState(false);
@@ -80,23 +79,6 @@ export function SearchFilters() {
             {/* Categories */}
             <div>
               <Label className="mb-3 block text-base">Categories</Label>
-              <div className="space-y-2">
-                {categories.map((category) => (
-                  <div key={category.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category.slug}
-                      checked={selectedCategories.includes(category.slug)}
-                      onCheckedChange={() => handleCategoryToggle(category.slug)}
-                    />
-                    <label
-                      htmlFor={category.slug}
-                      className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {category.name} ({category.count})
-                    </label>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Price Range */}
@@ -109,7 +91,9 @@ export function SearchFilters() {
                 max={500}
                 step={10}
                 value={priceRange}
-                onValueChange={(value) => setPriceRange(value as [number, number])}
+                onValueChange={(value) =>
+                  setPriceRange(value as [number, number])
+                }
                 className="mt-2"
               />
             </div>
