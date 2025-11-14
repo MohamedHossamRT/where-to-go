@@ -20,10 +20,10 @@ import {
 import { useState } from "react";
 
 export default function ListingDetail() {
-  const { slug } = useParams();
+const { id } = useParams();
   const [isFavorite, setIsFavorite] = useState(false);
   
-  const listing = listings.find((l) => l.slug === slug);
+const listing = listings.find((l) => String(l.id) === String(id));
 
   if (!listing) {
     return (

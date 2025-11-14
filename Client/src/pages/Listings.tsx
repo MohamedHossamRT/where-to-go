@@ -1,144 +1,312 @@
-import { useState, useMemo } from "react";
+import React, { useState, useEffect } from 'react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+
+} from "@/components/ui/card"
+import { Link } from "react-router-dom"
+import img from '../assets/Cardimg.png'
+import axios from "axios";
+import { Star, MapPin, Phone, Heart,Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { SearchFilters } from "@/components/SearchFilters";
-import { ListingCard } from "@/components/ListingCard";
-import { useFilterStore } from "@/store/useFilterStore";
-import { listings } from "@/data/mockData";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Grid, List, Map } from "lucide-react";
 
-export default function Listings() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState("nearest");
-  
-  const { search, categories: selectedCategories, priceRange } = useFilterStore();
 
-  const filteredListings = useMemo(() => {
-    let filtered = [...listings];
 
-    // Search filter
-    if (search) {
-      filtered = filtered.filter((listing) =>
-        listing.title.toLowerCase().includes(search.toLowerCase()) ||
-        listing.description.toLowerCase().includes(search.toLowerCase())
-      );
-    }
 
-    // Category filter
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((listing) =>
-        selectedCategories.includes(listing.category.toLowerCase())
-      );
-    }
-
-    // Price filter
-    filtered = filtered.filter(
-      (listing) => listing.price >= priceRange[0] && listing.price <= priceRange[1]
-    );
-
-    // Sort
-    switch (sortBy) {
-      case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-      default:
-        break;
-    }
-
-    return filtered;
-  }, [search, selectedCategories, priceRange, sortBy]);
-
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-
-      {/* Page Header */}
-      <div className="border-b bg-muted/30">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="mb-2 text-3xl font-bold">All Listings</h1>
-          <p className="text-muted-foreground">
-            Showing {filteredListings.length} of {listings.length} results
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-          {/* Search and Controls */}
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1 md:max-w-xl">
-              <SearchFilters />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="nearest">Nearest</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="flex rounded-md border">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="icon"
-                  onClick={() => setViewMode("grid")}
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="icon"
-                  onClick={() => setViewMode("list")}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Listings Grid */}
-          {filteredListings.length > 0 ? (
-            <div className={
-              viewMode === "grid"
-                ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                : "space-y-4"
-            }>
-              {filteredListings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-dashed py-16 text-center">
-              <Map className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No listings found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your filters to see more results
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <Footer />
-    </div>
-  );
+interface Restaurant {
+   _id: string;
+  name: string;
+  city: string;
+  category: string[];
+  phone?: string;
+  priceLevel?: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
+  address?: string;
+  website?: string;
 }
+
+const Listings: React.FC = () => {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
+ const [isFavorite, setIsFavorite] = useState<Record<string, boolean>>({});
+  const [sortOption, setSortOption] = useState<string>("default");
+  const [viewType, setViewType] = useState<string>("grid");
+  const [visibleCount, setVisibleCount] = useState(20);
+  const [originalRestaurants, setOriginalRestaurants] = useState<Restaurant[]>([]);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    axios
+      .get("http://127.0.0.1:5000/api/v1/places")
+      .then((res) => {
+      setRestaurants(res.data.data.places);
+      setOriginalRestaurants(res.data.data.places); 
+        setLoading(false);
+    })
+      
+      .catch((err) =>  {
+        console.error("Error:", err);
+        setError("Failed to load restaurants. Please try again later.");
+        setLoading(false);
+      })
+  }, [])
+
+ const togglefavorite = (id: string) => {
+  setIsFavorite(prev => ({
+    ...prev,
+    [id]: !prev[id]
+  }));
+};
+// 
+
+const getLocation = (): Promise<{ lat: number; lng: number }> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject("Geolocation not supported");
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          resolve({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        (err) => reject(err)
+      );
+    }
+  });
+};
+
+
+const handleSort = async (option: string) => {
+  setSortOption(option);
+   setLoading(true);
+    setError(null);
+
+  try {
+    if (option === "nearest") {
+      const { lat, lng } = await getLocation();
+
+      const res = await axios.get(
+        `http://127.0.0.1:5000/api/v1/places/search?sortBy=radius&lat=${lat}&lng=${lng}`
+      );
+
+      setRestaurants(res.data.data.places);
+    } 
+    else if (option === "highRating") {
+      const sorted = [...originalRestaurants].sort(
+        (a, b) => (b.ratingsAverage ?? 0) - (a.ratingsAverage ?? 0)
+      );
+      setRestaurants(sorted);
+    } 
+    else {
+      const res = await axios.get("http://127.0.0.1:5000/api/v1/places");
+      setRestaurants(res.data.data.places);
+    }
+    setLoading(false);
+  } catch (err) {
+    console.error("Error while sorting:", err);
+    setError("Error while sorting. Please try again.");
+    setLoading(false);
+  }
+};
+//load
+const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 8);
+  };
+
+
+ 
+  return (
+    <>
+ <Header/>
+      <div className="flex flex-col w-full h-[132px] bg-gray-100 dark:bg-background ">
+       
+        <div className="container mx-auto">
+          <h2 className='text-black font-bold text-4xl mt-5 ml-20 dark:text-white'>All Listings</h2>
+          <span className='text-gray-400 text-2xl mt-2 ml-[60px]'>Showing All results</span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center gap-6 mt-7">
+        {/* Dropdown */}
+        <select
+          className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ef4343] dark:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+          value={sortOption}
+          onChange={(e) => handleSort(e.target.value)}
+          disabled={loading}
+        >
+          <option value="default">Default</option>
+          <option value="nearest">Nearest</option>
+          <option value="highRating">Highest Rating</option>
+        </select>
+
+        {/* View toggle buttons */}
+        <div className="flex gap-2">
+          {/* Grid View Button */}
+          <button
+            onClick={() => setViewType("grid")}
+            disabled={loading}
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
+      ${viewType === "grid"
+                ? "bg-[#ef4343] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343]"
+              }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5"
+              fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M4 6h4V4H4v2zm6 0h4V4h-4v2zm6 0h4V4h-4v2zM4 12h4v-2H4v2zm6 0h4v-2h-4v2zm6 0h4v-2h-4v2zM4 18h4v-2H4v2zm6 0h4v-2h-4v2zm6 0h4v-2h-4v2z" />
+            </svg>
+          </button>
+
+          {/* List View Button */}
+          <button
+            onClick={() => setViewType("list")}
+            disabled={loading}
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
+      ${viewType === "list"
+                ? "bg-[#ef4343] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343]"
+              }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5"
+              fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+      {/* Error Message */}
+      {error && (
+        <div className="mx-auto max-w-2xl mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-center">{error}</p>
+        </div>
+      )}
+
+      {/* Loading Spinner */}
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 text-[#ef4343] animate-spin" />
+            <p className="text-gray-600 dark:text-gray-400">Loading restaurants...</p>
+          </div>
+        </div>
+      ) : (
+      <div
+        className={
+          viewType === "grid"
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6"
+            : "grid grid-cols-1 gap-6 p-15 md:w-[40%] mr-auto ml-auto mt-4"
+        }
+      >
+
+        {restaurants.slice(0, visibleCount).map((item)  => (
+          <Link key={item._id} to={`/Listing/${item._id}`}>
+            <Card className="group relative overflow-visible transition-all hover:shadow-lg h-full bg-card text-foreground border border-border p-0 pb-5">
+              <CardContent className="p-0">
+                <div className="relative aspect-4/3 overflow-hidden">
+                  <img
+                    src={img}
+                    alt={item.name}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                  />
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="absolute bottom-3 right-3 h-9 w-9 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      togglefavorite(item._id);
+                    }}
+                  >
+                    <Heart
+                      className={`h-5 w-5 transition-colors ${isFavorite[item._id]
+                        ? "fill-red-600 text-red-600"
+                        : "fill-none text-gray-100"
+                        }`}
+                    />
+                  </Button>
+                </div>
+              </CardContent>
+
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex justify-between items-center ">
+                    <div className="hover:text-[#ef4343]">
+                      {item.name}
+                    </div>
+                    <span className="relative group inline-block max-w-[80px] truncate border border-gray-400 text-gray-700 text-sm font-medium px-1 rounded-full dark:text-white">
+                   {item.category && item.category.length > 0 ? item.category[0] : "Not Found"}
+                   </span>
+                  </div>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground dark:text-white">{item.city}</CardDescription>
+              </CardHeader>
+
+              <CardFooter>
+                <div className="flex flex-col">
+                  <h5 className="text-gray-500">{item.address}</h5>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4  text-[#ef4343]" stroke="currentColor" fill="currentColor" />
+                      <span className="font-semibold">{item.ratingsAverage}</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-500 ">
+                      Price Level {"\u2191"}:
+                      <span className='text-[#ef4343]'>{item.priceLevel}</span>
+                    </div>
+                  </div>
+
+                  {item.phone ? (
+                    <div className="mt-3 flex items-center space-x-2 text-sm  text-gray-500">
+                      <Phone className="h-3 w-3 text-[#ef4343]" />
+                      <span>{item.phone}</span>
+                    </div>
+                  ) : (
+                    <div className="mt-3 flex items-center space-x-2 text-sm  text-gray-500">
+                      <Phone className="h-3 w-3" />
+                      <span>SOON!</span>
+                    </div>
+                  )}
+
+                </div>
+
+              </CardFooter>
+            </Card>
+          </Link>
+
+        ))}
+
+
+      </div>
+      )}
+      {!loading && visibleCount < restaurants.length && (
+        <div className="flex justify-center mt-8 mb-10">
+          <button
+            onClick={handleLoadMore}
+            className="px-5 py-2 bg-[#ef4343] text-white rounded-lg hover:bg-[#ff7e7e] transition"
+          >
+            Load More
+          </button>
+        </div>
+      )}
+ <Footer/>
+    </>
+  )
+}
+
+export default Listings
