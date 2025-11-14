@@ -1,5 +1,6 @@
 const express = require("express");
 const placeController = require("./../controllers/placeController");
+const { protect, restrictTo } = require("../middlewares/authMiddleware");
 
 router = express.Router();
 
@@ -7,17 +8,8 @@ router = express.Router();
 // router.post("/fetch-apify", placeController.fetchPlacesFromApify);
 // router.get("/distribution", placeController.getPlacesDistribution);
 
-router.get("/search", placeController.getFilteredPlaces);
-
-router
-  .route("/")
-  .get(placeController.getAllPlaces)
-  .post(placeController.createNewPlace);
-
-router
-  .route("/:id")
-  .get(placeController.getPlace)
-  .patch(placeController.updatePlace)
-  .delete(placeController.deletePlace);
+router.get("/search", protect, placeController.getFilteredPlaces);
+router.route("/:id").get(protect, placeController.getPlace);
+router.get("/", protect, restrictTo("admin"), placeController.getAllPlaces);
 
 module.exports = router;

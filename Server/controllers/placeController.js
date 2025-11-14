@@ -118,23 +118,6 @@ exports.getFilteredPlaces = async (req, res) => {
   }
 };
 
-exports.createNewPlace = async (req, res) => {
-  try {
-    const newPlace = await Place.create(req.body);
-    res.status(201).json({
-      message: "success",
-      data: {
-        newPlace,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "failed",
-      error: error.message,
-    });
-  }
-};
-
 exports.getPlace = async (req, res) => {
   try {
     const id = req.params.id;
@@ -146,59 +129,6 @@ exports.getPlace = async (req, res) => {
         data: {
           place,
         },
-      });
-    } else {
-      res.status(404).json({
-        message: "failed",
-        error: "Place not found",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: "failed",
-      error: error.message,
-    });
-  }
-};
-
-exports.updatePlace = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const updatedPlace = await Place.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (updatedPlace) {
-      res.status(200).json({
-        message: "success",
-        data: {
-          place: updatedPlace,
-        },
-      });
-    } else {
-      res.status(404).json({
-        message: "failed",
-        error: "Place not found",
-      });
-    }
-  } catch (error) {
-    res.status(400).json({
-      message: "failed",
-      error: error.message,
-    });
-  }
-};
-
-exports.deletePlace = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const deletedPlace = await Place.findByIdAndDelete(id);
-
-    if (deletedPlace) {
-      res.status(204).json({
-        message: "success",
-        data: null,
       });
     } else {
       res.status(404).json({
