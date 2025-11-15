@@ -10,12 +10,10 @@ exports.signup = async (req, res) => {
     if (existing)
       return res.status(400).json({ message: "Email already registered" });
 
-    const hashed = await bcrypt.hash(password, 10);
-
     const user = new User({
       name,
       email,
-      password: hashed,
+      password,
       role: role || "user",
       profilePicture: req.file ? req.file.path : "",
     });

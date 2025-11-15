@@ -1,33 +1,134 @@
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Heart, History, MapPin, Star, Trash2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Heart, History, MapPin, Star, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+const USERS_API_URL = "http://127.0.0.1:5000/api/users";
+const PLACES_API_URL = "http://127.0.0.1:5000/api/v1/places";
+
+interface FavoritePlace {
+  _id: string;
+  name: string;
+  category: string[];
+  ratingsAverage?: number;
+}
+
+interface HistoryItem {
+  _id: string;
+  name: string;
+}
 
 export default function Profile() {
-  const { user, isAdmin, isOwner } = useAuth();
+  const { user, isAdmin, isOwner, token } = useAuth();
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  // Mock data for user history and favorites
-  const [favorites] = useState([
-    { id: '1', title: 'Bella Italia Restaurant', category: 'Restaurant', rating: 4.8, image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80' },
-    { id: '3', title: 'The Grand Hotel', category: 'Hotel', rating: 4.9, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80' },
-  ]);
+  const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<
+    FavoritePlace[]
+  >({
+    queryKey: ["profileFavorites", token],
+    queryFn: async () => {
+      if (!token) return [];
+      const favListResponse = await fetch(`${USERS_API_URL}/favorites`, {
+        headers: { Authorization: `Bearer ${token}` }, //
+      });
+      if (!favListResponse.ok)
+        throw new Error("Failed to fetch favorites list");
+      const favListData = await favListResponse.json();
+      const favs: { _id: string; name: string }[] = favListData.data; //
+      if (favs.length === 0) return [];
 
-  const [visitedHistory] = useState([
-    { id: '1', title: 'Bella Italia Restaurant', category: 'Restaurant', visitedAt: '2024-02-15', image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80' },
-    { id: '5', title: 'Sunrise Cafe', category: 'Cafe', visitedAt: '2024-02-14', image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80' },
-    { id: '2', title: 'Urban Fitness Center', category: 'GYM', visitedAt: '2024-02-10', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' },
-  ]);
+      const placeIds = favs.map((fav) => fav._id).join(",");
+      const detailsResponse = await fetch(
+        `${PLACES_API_URL}/search?placeIds=${placeIds}` //
+      );
+      if (!detailsResponse.ok)
+        throw new Error("Failed to fetch favorite details");
+      const detailsData = await detailsResponse.json();
+      return detailsData.data.places;
+    },
+    enabled: !!token,
+  });
+
+  const deleteFavoriteMutation = useMutation({
+    mutationFn: async (placeId: string) => {
+      if (!token) throw new Error("Not authenticated");
+      const response = await fetch(
+        `${USERS_API_URL}/favorites/${placeId}`, //
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to remove favorite");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["profileFavorites"] });
+      toast({ title: "Success", description: "Removed from favorites" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const clearHistoryMutation = useMutation({
+    mutationFn: async () => {
+      if (!token) throw new Error("Not authenticated");
+      const response = await fetch(`${USERS_API_URL}/history`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Failed to clear history");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      toast({ title: "Success", description: "History cleared" });
+      queryClient.setQueryData(["userProfile"], (oldData: any) => ({
+        ...oldData,
+        history: [],
+      }));
+      window.location.reload();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const getInitials = (name: string) => {
-    const parts = name.split(' ');
+    const parts = name.split(" ");
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
@@ -35,13 +136,14 @@ export default function Profile() {
   };
 
   const getUserRole = () => {
-    if (isAdmin) return 'Admin';
-    if (isOwner) return 'Owner';
-    return 'User';
+    if (isAdmin) return "Admin";
+    if (isOwner) return "Owner";
+    return "User";
   };
 
-  const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-  const avatarUrl = user?.user_metadata?.avatar_url;
+  const fullName = user?.name || user?.email?.split("@")[0] || "User";
+  const avatarUrl = user?.profilePicture;
+  const userHistory: HistoryItem[] = user?.history || [];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -49,7 +151,6 @@ export default function Profile() {
 
       <div className="flex-1 bg-muted/30">
         <div className="container mx-auto px-4 py-8">
-          {/* Profile Header */}
           <Card className="mb-8">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
@@ -64,7 +165,7 @@ export default function Profile() {
                 <div className="flex-1 text-center md:text-left">
                   <h1 className="text-3xl font-bold mb-2">{fullName}</h1>
                   <p className="text-muted-foreground mb-3">{user?.email}</p>
-                  <Badge variant={isAdmin ? 'default' : 'secondary'}>
+                  <Badge variant={isAdmin ? "default" : "secondary"}>
                     {getUserRole()}
                   </Badge>
                 </div>
@@ -72,106 +173,185 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          {/* Tabs for Favorites and History */}
           <Tabs defaultValue="favorites" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="favorites" className="flex items-center gap-2">
+              <TabsTrigger
+                value="favorites"
+                className="flex items-center gap-2"
+              >
                 <Heart className="h-4 w-4" />
-                {t('nav.favorites')}
+                {t("nav.favorites")}
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <History className="h-4 w-4" />
-                {t('profile.history')}
+                {t("profile.history")}
               </TabsTrigger>
             </TabsList>
 
-            {/* Favorites Tab */}
             <TabsContent value="favorites">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Heart className="h-5 w-5" />
-                    {t('profile.myFavorites')}
+                    {t("profile.myFavorites")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {favorites.map((item) => (
-                      <Card key={item.id} className="overflow-hidden">
-                        <div 
-                          className="h-40 bg-cover bg-center"
-                          style={{ backgroundImage: `url(${item.image})` }}
-                        />
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold mb-2">{item.title}</h3>
-                          <div className="flex items-center justify-between">
-                            <Badge variant="secondary">{item.category}</Badge>
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm font-medium">{item.rating}</span>
+                  {isLoadingFavorites ? (
+                    <div className="flex justify-center py-8">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                    </div>
+                  ) : favorites.length > 0 ? (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {favorites.map((item) => (
+                        <Card key={item._id} className="overflow-hidden">
+                          <div
+                            className="h-40 bg-muted/50 border-b flex items-center justify-center cursor-pointer"
+                            onClick={() => navigate(`/listings/${item._id}`)}
+                          >
+                            <MapPin className="h-12 w-12 text-muted-foreground/50" />
+                          </div>
+                          <CardContent className="p-4">
+                            <h3 className="font-semibold mb-2">{item.name}</h3>
+                            <div className="flex items-center justify-between">
+                              <Badge variant="secondary">
+                                {item.category.join(", ")}
+                              </Badge>
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm font-medium">
+                                  {item.ratingsAverage || "N/A"}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div className="mt-3 flex gap-2">
-                            <Button size="sm" variant="outline" className="flex-1">
-                              <MapPin className="mr-1 h-3 w-3" />
-                              {t('common.view')}
-                            </Button>
-                            <Button size="sm" variant="ghost">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  {favorites.length === 0 && (
+                            <div className="mt-3 flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() =>
+                                  navigate(`/listings/${item._id}`)
+                                }
+                              >
+                                <MapPin className="mr-1 h-3 w-3" />
+                                {t("common.view")}
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Remove Favorite?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to remove "
+                                      {item.name}" from your favorites?
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      className="bg-destructive hover:bg-destructive/90"
+                                      onClick={() =>
+                                        deleteFavoriteMutation.mutate(item._id)
+                                      }
+                                    >
+                                      Remove
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
                     <p className="text-center text-muted-foreground py-8">
-                      {t('profile.noFavorites')}
+                      {t("profile.noFavorites")}
                     </p>
                   )}
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* History Tab */}
             <TabsContent value="history">
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle className="flex items-center gap-2">
                     <History className="h-5 w-5" />
-                    {t('profile.visitedHistory')}
+                    {t("profile.visitedHistory")}
                   </CardTitle>
+                  {userHistory.length > 0 && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={clearHistoryMutation.isPending}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Clear History
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Clear All History?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete your entire visited history.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-destructive hover:bg-destructive/90"
+                            onClick={() => clearHistoryMutation.mutate()}
+                          >
+                            Yes, Clear History
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {visitedHistory.map((item) => (
-                      <Card key={item.id} className="overflow-hidden">
-                        <div className="flex flex-col md:flex-row">
-                          <div 
-                            className="h-32 md:h-auto md:w-48 bg-cover bg-center"
-                            style={{ backgroundImage: `url(${item.image})` }}
-                          />
-                          <div className="flex-1 p-4">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h3 className="font-semibold mb-1">{item.title}</h3>
-                                <Badge variant="secondary" className="mb-2">{item.category}</Badge>
-                                <p className="text-sm text-muted-foreground">
-                                  {t('profile.visited')}: {new Date(item.visitedAt).toLocaleDateString()}
-                                </p>
-                              </div>
-                              <Button size="sm" variant="ghost">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
+                    {userHistory.map((item) => (
+                      <Card key={item._id} className="overflow-hidden">
+                        <div className="flex items-center p-4">
+                          <div className="h-12 w-12 bg-muted rounded-full flex items-center justify-center mr-4">
+                            <MapPin className="h-6 w-6 text-muted-foreground" />
                           </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{item.name}</h3>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate(`/listings/${item._id}`)}
+                          >
+                            View
+                          </Button>
                         </div>
                       </Card>
                     ))}
                   </div>
-                  {visitedHistory.length === 0 && (
+                  {userHistory.length === 0 && (
                     <p className="text-center text-muted-foreground py-8">
-                      {t('profile.noHistory')}
+                      {t("profile.noHistory")}
                     </p>
                   )}
                 </CardContent>
