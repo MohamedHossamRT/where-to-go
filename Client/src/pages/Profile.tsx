@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Heart, History, MapPin, Star, Trash2 } from "lucide-react";
+import { Heart, History, MapPin, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import img from "../assets/Cardimg.png";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const USERS_API_URL = "http://127.0.0.1:5000/api/users";
 
@@ -44,14 +44,6 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [localHistory, setLocalHistory] = useState<HistoryItem[]>([]);
-
-  // Initialize local history when user data loads
-  useEffect(() => {
-    if (user?.history) {
-      setLocalHistory(user.history);
-    }
-  }, [user?.history]);
 
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<
     FavoritePlace[]
@@ -84,7 +76,7 @@ export default function Profile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profileFavorites"] });
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["me", token] });
       toast({ 
         title: "Success", 
         description: "Removed from favorites",
@@ -101,38 +93,40 @@ export default function Profile() {
   });
 
   const clearHistoryMutation = useMutation({
-  mutationFn: async () => {
-    if (!token) throw new Error("Not authenticated");
-    const response = await fetch(`${USERS_API_URL}/history`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) {
-      try {
-        const errData = await response.json();
-        throw new Error(errData.message || "Failed to clear history");
-      } catch (e) {
-        throw new Error("Failed to clear history");
+    mutationFn: async () => {
+      if (!token) throw new Error("Not authenticated");
+      const response = await fetch(`${USERS_API_URL}/history`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        try {
+          const errData = await response.json();
+          throw new Error(errData.message || "Failed to clear history");
+        } catch (e) {
+          throw new Error("Failed to clear history");
+        }
       }
-    }
-  },
-  onSuccess: () => {
-    // Update local state immediately
-    setLocalHistory([]);
-    
-    // Fix: Use the same query key as AuthContext
-    queryClient.invalidateQueries({ queryKey: ["me", token] });
-    
-    toast({ title: "Success", description: "History cleared" });
-  },
-  onError: (error: any) => {
-    toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive",
-    });
-  },
-});
+    },
+    onSuccess: () => {
+      // Invalidate both queries to refresh data from server
+      queryClient.invalidateQueries({ queryKey: ["me", token] });
+      queryClient.invalidateQueries({ queryKey: ["profileFavorites"] });
+      
+      toast({ 
+        title: "Success", 
+        description: "History cleared successfully",
+        variant: "default"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const getInitials = (name: string) => {
     if (!name) return "??";
@@ -146,8 +140,8 @@ export default function Profile() {
   const fullName = user?.name || user?.email?.split("@")[0] || "User";
   const avatarUrl = user?.profilePicture;
   
-  // Use localHistory state for display to ensure immediate UI updates
-  const displayHistory = localHistory.length > 0 ? localHistory : (user?.history || []);
+  // Use user.history directly from AuthContext - this ensures multi-device sync
+  const displayHistory = user?.history || [];
 
   // Enhanced image component with error handling
   const PlaceImage = ({ src, alt, className, onClick }: { 
@@ -347,7 +341,7 @@ export default function Profile() {
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             This action cannot be undone. This will permanently
-                            delete your entire visited history.
+                            delete your entire visited history from all devices.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
