@@ -23,7 +23,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import img from "../assets/Cardimg.png"; //
+import img from "../assets/Cardimg.png";
+import { useState, useEffect } from "react";
 
 const USERS_API_URL = "http://127.0.0.1:5000/api/users";
 
@@ -43,6 +44,14 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [localHistory, setLocalHistory] = useState<HistoryItem[]>([]);
+
+  // Initialize local history when user data loads
+  useEffect(() => {
+    if (user?.history) {
+      setLocalHistory(user.history);
+    }
+  }, [user?.history]);
 
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<
     FavoritePlace[]
@@ -76,7 +85,11 @@ export default function Profile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profileFavorites"] });
       queryClient.invalidateQueries({ queryKey: ["me"] });
-      toast({ title: "Success", description: "Removed from favorites" });
+      toast({ 
+        title: "Success", 
+        description: "Removed from favorites",
+        variant: "default"
+      });
     },
     onError: (error: any) => {
       toast({
@@ -88,33 +101,38 @@ export default function Profile() {
   });
 
   const clearHistoryMutation = useMutation({
-    mutationFn: async () => {
-      if (!token) throw new Error("Not authenticated");
-      const response = await fetch(`${USERS_API_URL}/history`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        try {
-          const errData = await response.json();
-          throw new Error(errData.message || "Failed to clear history");
-        } catch (e) {
-          throw new Error("Failed to clear history");
-        }
+  mutationFn: async () => {
+    if (!token) throw new Error("Not authenticated");
+    const response = await fetch(`${USERS_API_URL}/history`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      try {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to clear history");
+      } catch (e) {
+        throw new Error("Failed to clear history");
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
-      toast({ title: "Success", description: "History cleared" });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+    }
+  },
+  onSuccess: () => {
+    // Update local state immediately
+    setLocalHistory([]);
+    
+    // Fix: Use the same query key as AuthContext
+    queryClient.invalidateQueries({ queryKey: ["me", token] });
+    
+    toast({ title: "Success", description: "History cleared" });
+  },
+  onError: (error: any) => {
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+  },
+});
 
   const getInitials = (name: string) => {
     if (!name) return "??";
@@ -127,7 +145,44 @@ export default function Profile() {
 
   const fullName = user?.name || user?.email?.split("@")[0] || "User";
   const avatarUrl = user?.profilePicture;
-  const userHistory: HistoryItem[] = user?.history || [];
+  
+  // Use localHistory state for display to ensure immediate UI updates
+  const displayHistory = localHistory.length > 0 ? localHistory : (user?.history || []);
+
+  // Enhanced image component with error handling
+  const PlaceImage = ({ src, alt, className, onClick }: { 
+    src: string; 
+    alt: string; 
+    className?: string;
+    onClick?: () => void;
+  }) => {
+    const [imgError, setImgError] = useState(false);
+
+    return (
+      <div className={className} onClick={onClick}>
+        {!imgError ? (
+          <img
+            src={src}
+            alt={alt}
+            className="h-full w-full object-cover cursor-pointer"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="h-full w-full bg-muted flex items-center justify-center">
+            <MapPin className="h-8 w-8 text-muted-foreground" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Loading component
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center py-8">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <span className="ml-2 text-muted-foreground">Loading...</span>
+    </div>
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -179,17 +234,15 @@ export default function Profile() {
                 </CardHeader>
                 <CardContent>
                   {isLoadingFavorites ? (
-                    <div className="flex justify-center py-8">
-                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                    </div>
+                    <LoadingSpinner />
                   ) : favorites.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                       {favorites.map((item) => (
                         <Card key={item._id} className="overflow-hidden">
-                          <img
+                          <PlaceImage
                             src={img}
                             alt={item.name}
-                            className="h-40 w-full object-cover cursor-pointer"
+                            className="h-40 w-full cursor-pointer"
                             onClick={() => navigate(`/listing/${item._id}`)}
                           />
                           <CardContent className="p-4">
@@ -210,8 +263,13 @@ export default function Profile() {
                                     size="sm"
                                     variant="ghost"
                                     className="text-destructive hover:text-destructive"
+                                    disabled={deleteFavoriteMutation.isPending}
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    {deleteFavoriteMutation.isPending ? (
+                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                                    ) : (
+                                      <Trash2 className="h-4 w-4" />
+                                    )}
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -233,8 +291,9 @@ export default function Profile() {
                                       onClick={() =>
                                         deleteFavoriteMutation.mutate(item._id)
                                       }
+                                      disabled={deleteFavoriteMutation.isPending}
                                     >
-                                      Remove
+                                      {deleteFavoriteMutation.isPending ? "Removing..." : "Remove"}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -260,7 +319,7 @@ export default function Profile() {
                     <History className="h-5 w-5" />
                     {t("profile.visitedHistory")}
                   </CardTitle>
-                  {userHistory.length > 0 && (
+                  {displayHistory.length > 0 && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
@@ -268,8 +327,17 @@ export default function Profile() {
                           size="sm"
                           disabled={clearHistoryMutation.isPending}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Clear History
+                          {clearHistoryMutation.isPending ? (
+                            <div className="flex items-center gap-2">
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                              Clearing...
+                            </div>
+                          ) : (
+                            <>
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Clear History
+                            </>
+                          )}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -283,12 +351,15 @@ export default function Profile() {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel>
+                            Cancel
+                          </AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive hover:bg-destructive/90"
                             onClick={() => clearHistoryMutation.mutate()}
+                            disabled={clearHistoryMutation.isPending}
                           >
-                            Yes, Clear History
+                            {clearHistoryMutation.isPending ? "Clearing..." : "Yes, Clear History"}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -297,14 +368,16 @@ export default function Profile() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {userHistory.map((item) => (
+                    {displayHistory.map((item) => (
                       <Card key={item._id} className="overflow-hidden">
                         <div className="flex items-center p-4">
-                          <img
-                            src={img}
-                            alt={item.name}
-                            className="h-12 w-12 rounded-full object-cover mr-4"
-                          />
+                          <div className="h-12 w-12 rounded-full overflow-hidden mr-4">
+                            <PlaceImage
+                              src={img}
+                              alt={item.name}
+                              className="h-12 w-12"
+                            />
+                          </div>
                           <div className="flex-1">
                             <h3 className="font-semibold">{item.name}</h3>
                           </div>
@@ -319,7 +392,7 @@ export default function Profile() {
                       </Card>
                     ))}
                   </div>
-                  {userHistory.length === 0 && (
+                  {displayHistory.length === 0 && (
                     <p className="text-center text-muted-foreground py-8">
                       {t("profile.noHistory")}
                     </p>
