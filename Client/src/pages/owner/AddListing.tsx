@@ -150,7 +150,7 @@ export default function AddListing() {
             : "Your listing is now pending admin approval.",
       });
 
-      navigate("/owner/my-listings");
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("Submission error:", error);
       toast({

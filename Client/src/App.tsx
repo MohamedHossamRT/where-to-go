@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -14,11 +14,10 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
-import MyListings from "./pages/owner/MyListings";
 import AddListing from "./pages/owner/AddListing";
+import EditListing from "./pages/owner/EditListing";
 import NotFound from "./pages/NotFound";
 import "./lib/i18n";
-import EditListing from "./pages/owner/EditListing";
 
 const queryClient = new QueryClient();
 
@@ -31,16 +30,15 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/listings" element={<Listings />} />
               <Route path="/listing/:id" element={<ListingDetails />} />
               <Route path="/contact" element={<Contact />} />
-
-              {/* Auth Routes */}
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
 
-              {/* User Routes */}
+              {/* Protected User Routes */}
               <Route
                 path="/profile"
                 element={
@@ -50,25 +48,17 @@ const App = () => (
                 }
               />
 
-              {/* Admin Routes */}
+              {/* UNIFIED DASHBOARD (Owner & Admin) */}
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRoute requireAdmin>
+                  <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
                 }
               />
 
-              {/* Owner Routes */}
-              <Route
-                path="/owner/my-listings"
-                element={
-                  <ProtectedRoute requireOwner>
-                    <MyListings />
-                  </ProtectedRoute>
-                }
-              />
+              {/* Listing CRUD Operations */}
               <Route
                 path="/owner/add-listing"
                 element={
@@ -86,7 +76,11 @@ const App = () => (
                 }
               />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route
+                path="/owner/my-listings"
+                element={<Navigate to="/dashboard" replace />}
+              />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -165,7 +166,7 @@ export default function EditListing() {
           title: "Submitted for Review",
           description: "Your changes are pending admin approval.",
         });
-        navigate("/owner/my-listings");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast({
@@ -292,13 +293,7 @@ export default function EditListing() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() =>
-                      navigate(
-                        user?.role === "admin"
-                          ? "/dashboard"
-                          : "/owner/my-listings"
-                      )
-                    }
+                    onClick={() => navigate("/dashboard")}
                   >
                     Cancel
                   </Button>
