@@ -12,6 +12,7 @@ const AUTH_API_URL = "http://127.0.0.1:5000/api/auth";
 const USERS_API_URL = "http://127.0.0.1:5000/api/users";
 
 export interface User {
+  [x: string]: any;
   _id: string;
   name: string;
   email: string;

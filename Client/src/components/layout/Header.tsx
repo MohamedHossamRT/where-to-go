@@ -13,29 +13,31 @@ import { SignOutButton } from "@/components/SignOutButton"; // Assuming this com
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { user, isOwner } = useAuth(); // Removed unnecessary signOut here
+  const { user, isOwner } = useAuth();
   const { t } = useTranslation();
 
-  // Navigation setup
+  // 1. إعداد قائمة التنقل الأساسية
   const navigation = [
     { name: t("nav.home"), href: "/" },
     { name: t("nav.listings"), href: "/listings" },
     { name: t("nav.contact"), href: "/contact" },
+    // إضافة رابط لوحة التحكم لجميع المستخدمين المسجلين (مالك/مسؤول/مستخدم عادي)
+    // لأن لوحة التحكم موحدة الآن
+    ...(user ? [{ name: t("nav.dashboard"), href: "/dashboard" }] : []),
   ];
 
-  if (isOwner) {
-    // Note: Use push for array modification outside of rendering logic
-    navigation.push({ name: t("nav.myListings"), href: "/owner/my-listings" });
-  }
-
-  // Determine user display name for mobile menu
-  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || t("common.user");
+  // 2. تحديد اسم المستخدم للعرض في قائمة الموبايل
+  const displayName =
+    user?.name || user?.email?.split("@")[0] || t("common.user");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-gray-900/90 dark:border-gray-700">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
+        <Link
+          to="/"
+          className="flex items-center space-x-2 rtl:space-x-reverse"
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ef4343]">
             <MapPin className="h-6 w-6 text-white" />
           </div>
@@ -50,7 +52,9 @@ export function Header() {
               to={item.href}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-[#ef4343] dark:hover:text-[#ff7e7e]",
-                location.pathname === item.href
+                location.pathname === item.href ||
+                  (item.href === "/dashboard" &&
+                    location.pathname.startsWith("/owner"))
                   ? "text-[#ef4343] dark:text-[#ff7e7e]"
                   : "text-foreground/60 dark:text-gray-400"
               )}
@@ -60,13 +64,14 @@ export function Header() {
           ))}
         </div>
 
-        {/* Desktop Controls (Left/RTL or Right/LTR) */}
+        {/* Desktop Controls (Right) */}
         <div className="hidden md:flex md:items-center md:space-x-2 rtl:space-x-reverse">
           <LanguageSwitcher />
           <ThemeToggle />
 
           {user ? (
             <>
+              {/* Add New Listing Button (Owner/Admin Only) */}
               {isOwner && (
                 <Link to="/owner/add-listing">
                   <Button size="sm" className="bg-[#ef4343] hover:bg-[#ff7e7e]">
@@ -75,14 +80,19 @@ export function Header() {
                   </Button>
                 </Link>
               )}
+              {/* User Avatar and Sign Out */}
               <UserAvatar user={user} />
-              {/* Assuming SignOutButton handles the onClick logic */}
-              <SignOutButton /> 
+              <SignOutButton />
             </>
           ) : (
+            /* Auth Buttons (Sign In / Sign Up) */
             <>
               <Link to="/signin">
-                <Button variant="outline" size="sm" className="dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white"
+                >
                   {t("nav.signin")}
                 </Button>
               </Link>
@@ -99,6 +109,10 @@ export function Header() {
         <button
           className="md:hidden dark:text-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-expanded={mobileMenuOpen}
+          aria-label={
+            mobileMenuOpen ? t("common.closeMenu") : t("common.openMenu")
+          }
         >
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -118,7 +132,9 @@ export function Header() {
                 to={item.href}
                 className={cn(
                   "block rounded-md px-3 py-2 text-base font-medium transition-colors",
-                  location.pathname === item.href
+                  location.pathname === item.href ||
+                    (item.href === "/dashboard" &&
+                      location.pathname.startsWith("/admin"))
                     ? "bg-[#ef4343] text-white"
                     : "text-foreground/80 hover:bg-muted dark:text-gray-300 dark:hover:bg-gray-800"
                 )}
@@ -127,7 +143,7 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            
+
             {/* Language & Theme Switchers */}
             <div className="flex items-center justify-between py-2 border-b dark:border-gray-700">
               <LanguageSwitcher />
@@ -141,12 +157,17 @@ export function Header() {
                   {/* Mobile User Info Card */}
                   <div className="flex flex-col items-start gap-3 p-3 border rounded-md dark:border-gray-700 dark:bg-gray-800">
                     <div className="flex items-center gap-3 w-full">
-                        <UserAvatar user={user} />
-                        <div className="flex-1 text-sm">
-                          <p className="font-medium dark:text-white">{displayName}</p>
-                          <p className="text-muted-foreground text-xs dark:text-gray-400">{user.email}</p>
-                        </div>
-                        <SignOutButton /> {/* Sign out button moved to the info card for clarity */}
+                      <UserAvatar user={user} />
+                      <div className="flex-1 text-sm">
+                        <p className="font-medium dark:text-white">
+                          {displayName}
+                        </p>
+                        <p className="text-muted-foreground text-xs dark:text-gray-400">
+                          {user.email}
+                        </p>
+                      </div>
+                      {/* Sign out button inside the info card */}
+                      <SignOutButton />
                     </div>
                   </div>
 
@@ -162,9 +183,9 @@ export function Header() {
                       </Button>
                     </Link>
                   )}
-                  
                 </>
               ) : (
+                /* Mobile Auth Buttons (Sign In / Sign Up) */
                 <>
                   <Link to="/signin">
                     <Button

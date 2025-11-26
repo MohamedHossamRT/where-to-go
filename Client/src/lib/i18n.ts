@@ -1,5 +1,5 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 // Translation files
 const resources = {
@@ -16,7 +16,7 @@ const resources = {
       "nav.favorites": "Favorites",
       "nav.myListings": "My Listings",
       
-      // --- Home ---
+      // --- Home (omitted for brevity) ---
       "home.hero.title": "Discover Amazing Places",
       "home.hero.subtitle": "Find the best restaurants, cafes, and services in your area",
       "home.categories.title": "Browse by Category",
@@ -32,7 +32,7 @@ const resources = {
       "home.stats.title": "Our Success in Numbers",
       "home.stats.subtitle": "The metrics that reflect our commitment to the community.",
       
-      // --- Search & Filters ---
+      // --- Search & Filters (omitted for brevity) ---
       "search.placeholder": "Search locations...",
       "search.filters": "Filters",
       "search.category": "Category",
@@ -63,7 +63,7 @@ const resources = {
       "filter.clear": "Clear",
       "filter.apply": "Apply Filters",
       
-      // --- Listings Data & Table ---
+      // --- Listings Data & Table (omitted for brevity) ---
       "listing.rating": "Rating",
       "listing.reviews": "reviews",
       "listing.distance": "km away",
@@ -99,10 +99,10 @@ const resources = {
       "table.head.status": "Status",
       "table.head.actions": "Actions",
 
-      // --- Category ---
+      // --- Category (omitted for brevity) ---
       "category.countDisplay": "({{count}})",
 
-      // --- Auth ---
+      // --- Auth (omitted for brevity) ---
       "auth.signIn": "Sign In",
       "auth.signUp": "Sign Up",
       "auth.email": "Email",
@@ -148,10 +148,58 @@ const resources = {
       "dashboard.table.priceLevel": "Price Level",
       "dashboard.table.rating": "Rating",
       "dashboard.table.status": "Status",
-      "dashboard.table.email": "Email",
-      "dashboard.table.role": "Role",
+      "dashboard.table.email": "Email", // 🔥 NEW
+      "dashboard.table.role": "Role",   // 🔥 NEW
+      "dashboard.table.city": "City",
+      "dashboard.table.price": "Price",
+      "dashboard.table.actions": "Actions",
+      "dashboard.listingsTitle": "Listings Management",
+      "dashboard.subtitle.admin": "System Overview & Management",
+      "dashboard.subtitle.owner": "Manage your business listings",
+      "dashboard.addNewPlace": "Add New Place",
+      "dashboard.noListings": "No listings found.",
+      "dashboard.unknown": "Unknown",
+      "dashboard.rejectionReason": "Reason",
+      "dashboard.deleteListingTitle": "Delete Listing",
+      "dashboard.deleteListingDesc": "Are you sure? This action cannot be undone.",
+      "dashboard.status.pending":"Pending",
+      "dashboard.status.accepted":"Accepted",
+      "dashboard.status.rejected":"Rejected",
+      "dashboard.usersTitle": "All System Users",
+      "dashboard.noUsers": "No users found.",
+      "dashboard.deleteUserTitle": "Delete User", // 🔥 NEW
+      "dashboard.deleteUserDesc": "Are you sure you want to delete {{name}}? All associated data will be lost.", // 🔥 NEW
       
-      // --- Owner ---
+      // --- User Roles (NEW) ---
+      "roles.user": "User", 
+      "roles.owner": "Owner",
+      "roles.admin": "Admin",
+
+      // --- Add User (NEW) ---
+      "addUser.title": "Add New User",
+      "addUser.subtitle": "Create a new user account and set their role",
+      "addUser.form.name": "Full Name",
+      "addUser.form.namePlaceholder": "Enter user's full name",
+      "addUser.form.email": "Email Address",
+      "addUser.form.emailPlaceholder": "Enter user's email address",
+      "addUser.form.password": "Password",
+      "addUser.form.passwordPlaceholder": "Set temporary password",
+      "addUser.form.role": "User Role",
+      "addUser.form.selectRole": "Select a role",
+      "addUser.form.addButton": "Add User",
+      
+      // --- Edit User (NEW) ---
+      "editUser.title": "Edit User: {{name}}",
+      "editUser.subtitle": "Update user details and permissions",
+      "editUser.selfRoleWarning": "You cannot change the role of your own admin account.",
+      "editUser.form.name": "Full Name",
+      "editUser.form.namePlaceholder": "Enter new name",
+      "editUser.form.email": "Email Address (Cannot be changed)",
+      "editUser.form.emailHint": "Email cannot be modified from this interface.",
+      "editUser.form.role": "User Role",
+      "editUser.form.selectRole": "Select a new role",
+      
+      // --- Owner (omitted for brevity) ---
       "owner.myListings": "My Listings",
       "owner.addNew": "Add New Listing",
       "owner.edit": "Edit",
@@ -171,8 +219,24 @@ const resources = {
       "owner.validation.requiredPlaceId": "Place ID is required",
       "owner.validation.requiredTitle": "Title is required",
       "owner.validation.requiredDescription": "Description is required",
+      "owner.edit.title": "Edit Listing", // NEW
+      "owner.edit.subtitle.admin": "Update listing details", // NEW
+      "owner.edit.subtitle.owner": "Edit place details (Requires Re-approval)", // NEW
+      "owner.edit.cardTitle": "Place Details", // NEW
+      "owner.form.label.placeName": "Place Name *", // NEW
+      "owner.form.label.city": "City *", // NEW
+      "owner.form.label.address": "Address *", // NEW
+      "owner.form.label.category": "Category *", // NEW
+      "owner.form.label.priceLevel": "Price Level (1-4) *", // NEW
+      "owner.form.label.phone": "Phone", // NEW
+      "owner.form.label.website": "Website", // NEW
+      "owner.form.label.mapsLink": "Update Location (Optional)", // NEW
+      "owner.form.placeholder.maps": "Paste new Google Maps link to change location...", // NEW
+      "owner.validation.priceLevelMin": "Min 1", // NEW
+      "owner.validation.priceLevelMax": "Max 4", // NEW
+      "owner.validation.invalidMapLink": "Invalid Google Maps link format.", // NEW
       
-      // --- Contact ---
+      // --- Contact (omitted for brevity) ---
       "contact.title": "Contact Us",
       "contact.subtitle": "Get in touch with us",
       "contact.name": "Name",
@@ -220,8 +284,12 @@ const resources = {
       "common.notAuthenticated": "Not authenticated",
       "common.na": "N/A",
       "common.authenticating": "Authenticating...",
+      "common.required": "Required", 
+      "common.saving": "Saving...", 
+      "common.saveChanges": "Save Changes", 
+      "common.backToDashboard": "Back to Dashboard", // 🔥 NEW
 
-      // --- Profile ---
+      // --- Profile (omitted for brevity) ---
       "profile.myFavorites": "My Favorites",
       "profile.visitedHistory": "Visited History",
       "profile.history": "History",
@@ -231,12 +299,12 @@ const resources = {
       "profile.manageFavorites": "Manage your favorite places",
       "profile.startSaving": "Start exploring and save your favorite places here",
       
-      // --- Not Found ---
+      // --- Not Found (omitted for brevity) ---
       "notFound.title": "Oops! Page not found",
       "notFound.returnHome": "Return to Home",
       "notFound.errorLog": "User attempted to access non-existent route:",
 
-      // --- Dialogs ---
+      // --- Dialogs (omitted for brevity) ---
       "dialog.favRemove.title": "Remove Favorite?",
       "dialog.favRemove.desc": "Are you sure you want to remove \"{{placeName}}\" from your favorites?",
       "dialog.historyClear.button": "Clear History",
@@ -246,7 +314,7 @@ const resources = {
       "dialog.delete.title": "Delete Listing",
       "dialog.delete.desc": "Are you sure you want to delete this listing? This action cannot be undone.",
       
-      // --- Upload ---
+      // --- Upload (omitted for brevity) ---
       "upload.changePhoto": "Change Photo",
       "upload.uploadPhoto": "Upload Photo",
       "upload.optionalMax": "Optional • Max 5MB",
@@ -261,6 +329,7 @@ const resources = {
       "toast.signInSuccess.desc": "Signed in successfully",
       "toast.signUpSuccess.desc": "Account created successfully! You can now sign in.",
       "toast.error.title": "Error",
+      "toast.error.unexpectedResponse": "حدث خطأ غير متوقع. قد تكون مشكلة في مسار الخادم أو المصادقة.",
       "toast.error.location": "Could not get your location for sorting.",
       "toast.error.failedUpdate": "Failed to update favorite",
       "toast.error.failedFav": "Failed to remove favorite",
@@ -276,8 +345,29 @@ const resources = {
       "toast.addListingError.login": "You must be logged in to submit a listing.",
       "toast.addListingError.failed": "Failed to create listing",
       "toast.addListingSuccess.desc": "Listing submitted successfully. It is now pending review.",
+      "toast.fetchError.listing": "Failed to fetch listing", 
+      "toast.fetchError.notFound": "Listing not found", 
+      "toast.update.title.failed": "Update Failed", 
+      "toast.update.title.admin": "Updated", 
+      "toast.update.title.owner": "Submitted for Review", 
+      "toast.update.desc.admin": "Listing updated successfully.", 
+      "toast.update.desc.owner": "Your changes are pending admin approval.", 
+      "toast.fetchError.user": "Failed to fetch user data.", // 🔥 NEW
+      "toast.deleteError.userDelete": "Failed to delete user.", // 🔥 NEW
+      "toast.deleteSuccess.user": "User deleted successfully.", // 🔥 NEW
+      "toast.editError.user": "Failed to update user data.", // 🔥 NEW
+      "toast.editSuccess.user": "User data updated successfully.", // 🔥 NEW
+      "toast.addError.user": "Failed to create user.", // 🔥 NEW
+      "toast.addSuccess.user": "User created successfully.", // 🔥 NEW
       
-      // --- Footer ---
+      // --- Error Messages (NEW) ---
+      "error.userNotFound": "User Not Found", // 🔥 NEW
+      "error.couldNotFetchUser": "Could not fetch the requested user data.", // 🔥 NEW
+      "error.missingAuthOrId": "Missing authentication token or user ID.", // 🔥 NEW
+      "error.missingAuth": "Missing authentication token.", // 🔥 NEW
+      "error.missingFields": "Please fill in all required fields (Name, Email, and Password).", // 🔥 NEW
+      
+      // --- Footer (omitted for brevity) ---
       "footer.slogan": "Discover and connect with great places around the world. Your ultimate directory for local businesses.",
       "footer.quickLinksTitle": "Quick Links",
       "footer.browseListings": "Browse Listings",
@@ -291,11 +381,11 @@ const resources = {
       "footer.contactTitle": "Contact",
       "footer.copyright": "© {{year}} WhereToGo. All rights reserved.",
 
-      // --- Language ---
+      // --- Language (omitted for brevity) ---
       "language.en": "English",
       "language.ar": "العربية",
 
-      // --- Map ---
+      // --- Map (omitted for brevity) ---
       "map.placeholder": "Map integration placeholder",
       "map.config": "Configure with your Mapbox or Leaflet API key"
     }
@@ -313,7 +403,7 @@ const resources = {
       "nav.favorites": "المفضلة",
       "nav.myListings": "قوائمي",
       
-      // --- Home ---
+      // --- Home (omitted for brevity) ---
       "home.hero.title": "اكتشف أماكن مذهلة",
       "home.hero.subtitle": "اعثر على أفضل المطاعم والمقاهي والخدمات في منطقتك",
       "home.categories.title": "تصفح حسب الفئة",
@@ -329,7 +419,7 @@ const resources = {
       "home.stats.title": "نجاحنا بالأرقام",
       "home.stats.subtitle": "المقاييس التي تعكس التزامنا تجاه المجتمع.",
       
-      // --- Search & Filters ---
+      // --- Search & Filters (omitted for brevity) ---
       "search.placeholder": "ابحث عن الأماكن...",
       "search.filters": "التصفية",
       "search.category": "الفئة",
@@ -360,7 +450,7 @@ const resources = {
       "filter.clear": "مسح",
       "filter.apply": "تطبيق عوامل التصفية",
 
-      // --- Listings Data & Table ---
+      // --- Listings Data & Table (omitted for brevity) ---
       "listing.rating": "التقييم",
       "listing.reviews": "مراجعات",
       "listing.distance": "كم بعيدًا",
@@ -396,10 +486,10 @@ const resources = {
       "table.head.status": "الحالة",
       "table.head.actions": "الإجراءات",
 
-      // --- Category ---
+      // --- Category (omitted for brevity) ---
       "category.countDisplay": "({{count}})",
 
-      // --- Auth ---
+      // --- Auth (omitted for brevity) ---
       "auth.signIn": "تسجيل الدخول",
       "auth.signUp": "إنشاء حساب",
       "auth.email": "البريد الإلكتروني",
@@ -445,10 +535,58 @@ const resources = {
       "dashboard.table.priceLevel": "مستوى السعر",
       "dashboard.table.rating": "التقييم",
       "dashboard.table.status": "الحالة",
-      "dashboard.table.email": "البريد الإلكتروني",
-      "dashboard.table.role": "الدور",
+      "dashboard.table.email": "البريد الإلكتروني", // 🔥 NEW
+      "dashboard.table.role": "الدور",   // 🔥 NEW
+      "dashboard.table.city": "المدينة",
+      "dashboard.table.price": "السعر",
+      "dashboard.table.actions": "الإجراءات",
+      "dashboard.listingsTitle": "إدارة قوائم الأماكن",
+      "dashboard.subtitle.admin": "إدارة المستخدمين والقوائم",
+      "dashboard.subtitle.owner": "إدارة قوائم أعمالك",
+      "dashboard.addNewPlace": "إضافة مكان جديد",
+      "dashboard.noListings": "لم يتم العثور على قوائم.",
+      "dashboard.unknown": "غير معروف",
+      "dashboard.rejectionReason": "السبب",
+      "dashboard.deleteListingTitle": "حذف القائمة",
+      "dashboard.deleteListingDesc": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.",
+      "dashboard.status.pending":"قيد الانتظار",
+      "dashboard.status.accepted":"مقبول",
+      "dashboard.status.rejected":"مرفوض",
+      "dashboard.usersTitle": "جميع مستخدمي النظام",
+      "dashboard.noUsers": "لم يتم العثور على مستخدمين.",
+      "dashboard.deleteUserTitle": "حذف المستخدم", // 🔥 NEW
+      "dashboard.deleteUserDesc": "هل أنت متأكد من أنك تريد حذف {{name}}؟ سيتم فقدان جميع البيانات المرتبطة.", // 🔥 NEW
+      
+      // --- User Roles (NEW) ---
+      "roles.user": "مستخدم",
+      "roles.owner": "مالك",
+      "roles.admin": "مسؤول",
 
-      // --- Owner ---
+      // --- Add User (NEW) ---
+      "addUser.title": "إضافة مستخدم جديد",
+      "addUser.subtitle": "إنشاء حساب مستخدم جديد وتحديد صلاحياته",
+      "addUser.form.name": "الاسم الكامل",
+      "addUser.form.namePlaceholder": "أدخل اسم المستخدم",
+      "addUser.form.email": "البريد الإلكتروني",
+      "addUser.form.emailPlaceholder": "أدخل بريد المستخدم الإلكتروني",
+      "addUser.form.password": "كلمة المرور",
+      "addUser.form.passwordPlaceholder": "تعيين كلمة مرور مؤقتة",
+      "addUser.form.role": "صلاحية المستخدم (الدور)",
+      "addUser.form.selectRole": "اختر صلاحية",
+      "addUser.form.addButton": "إضافة المستخدم",
+      
+      // --- Edit User (NEW) ---
+      "editUser.title": "تعديل المستخدم: {{name}}",
+      "editUser.subtitle": "تحديث بيانات وصلاحيات المستخدم",
+      "editUser.selfRoleWarning": "لا يمكنك تعديل صلاحية حسابك الخاص كمسؤول.",
+      "editUser.form.name": "الاسم الكامل",
+      "editUser.form.namePlaceholder": "أدخل الاسم الجديد",
+      "editUser.form.email": "البريد الإلكتروني (لا يمكن تغييره)",
+      "editUser.form.emailHint": "لا يمكن تعديل البريد الإلكتروني من هذه الواجهة.",
+      "editUser.form.role": "صلاحية المستخدم (الدور)",
+      "editUser.form.selectRole": "اختر صلاحية جديدة",
+      
+      // --- Owner (omitted for brevity) ---
       "owner.myListings": "قوائمي",
       "owner.addNew": "إضافة قائمة جديدة",
       "owner.edit": "تعديل",
@@ -468,8 +606,24 @@ const resources = {
       "owner.validation.requiredPlaceId": "معرف المكان مطلوب",
       "owner.validation.requiredTitle": "العنوان مطلوب",
       "owner.validation.requiredDescription": "الوصف مطلوب",
+      "owner.edit.title": "تعديل القائمة", 
+      "owner.edit.subtitle.admin": "تحديث تفاصيل القائمة", 
+      "owner.edit.subtitle.owner": "تعديل تفاصيل المكان (يتطلب إعادة موافقة)", 
+      "owner.edit.cardTitle": "تفاصيل المكان", 
+      "owner.form.label.placeName": "اسم المكان *", 
+      "owner.form.label.city": "المدينة *", 
+      "owner.form.label.address": "العنوان *", 
+      "owner.form.label.category": "الفئة *", 
+      "owner.form.label.priceLevel": "مستوى السعر (1-4) *", 
+      "owner.form.label.phone": "الهاتف", 
+      "owner.form.label.website": "الموقع الإلكتروني", 
+      "owner.form.label.mapsLink": "تحديث الموقع (اختياري)", 
+      "owner.form.placeholder.maps": "الصق رابط خرائط جوجل الجديد لتغيير الموقع...", 
+      "owner.validation.priceLevelMin": "الحد الأدنى 1", 
+      "owner.validation.priceLevelMax": "الحد الأقصى 4", 
+      "owner.validation.invalidMapLink": "تنسيق رابط خرائط جوجل غير صالح.", 
       
-      // --- Contact ---
+      // --- Contact (omitted for brevity) ---
       "contact.title": "اتصل بنا",
       "contact.subtitle": "تواصل معنا",
       "contact.name": "الاسم",
@@ -517,8 +671,12 @@ const resources = {
       "common.notAuthenticated": "غير مصرح له",
       "common.na": "غير متاح",
       "common.authenticating": "جاري التحقق من الهوية...",
-
-      // --- Profile ---
+      "common.required": "مطلوب", 
+      "common.saving": "جاري الحفظ...", 
+      "common.saveChanges": "حفظ التغييرات", 
+      "common.backToDashboard": "العودة إلى لوحة التحكم", // 🔥 NEW
+      
+      // --- Profile (omitted for brevity) ---
       "profile.myFavorites": "مفضلاتي",
       "profile.visitedHistory": "تاريخ الزيارات",
       "profile.history": "السجل",
@@ -528,12 +686,12 @@ const resources = {
       "profile.manageFavorites": "إدارة الأماكن المفضلة لديك",
       "profile.startSaving": "ابدأ الاستكشاف واحفظ أماكنك المفضلة هنا",
       
-      // --- Not Found ---
+      // --- Not Found (omitted for brevity) ---
       "notFound.title": "عذرًا! الصفحة غير موجودة",
       "notFound.returnHome": "العودة إلى الصفحة الرئيسية",
       "notFound.errorLog": "حاول المستخدم الوصول إلى مسار غير موجود:",
 
-      // --- Dialogs ---
+      // --- Dialogs (omitted for brevity) ---
       "dialog.favRemove.title": "إزالة المفضلة؟",
       "dialog.favRemove.desc": "هل أنت متأكد من أنك تريد إزالة \"{{placeName}}\" من مفضلاتك؟",
       "dialog.historyClear.button": "مسح السجل",
@@ -543,7 +701,7 @@ const resources = {
       "dialog.delete.title": "حذف القائمة",
       "dialog.delete.desc": "هل أنت متأكد من أنك تريد حذف هذه القائمة؟ لا يمكن التراجع عن هذا الإجراء.",
       
-      // --- Upload ---
+      // --- Upload (omitted for brevity) ---
       "upload.changePhoto": "تغيير الصورة",
       "upload.uploadPhoto": "تحميل صورة",
       "upload.optionalMax": "اختياري • بحد أقصى 5 ميجابايت",
@@ -573,8 +731,29 @@ const resources = {
       "toast.addListingError.login": "يجب عليك تسجيل الدخول لإرسال قائمة.",
       "toast.addListingError.failed": "فشل إنشاء القائمة",
       "toast.addListingSuccess.desc": "تم إرسال القائمة بنجاح. وهي الآن قيد المراجعة.",
+      "toast.fetchError.listing": "فشل جلب القائمة", 
+      "toast.fetchError.notFound": "لم يتم العثور على القائمة", 
+      "toast.update.title.failed": "فشل التحديث", 
+      "toast.update.title.admin": "تم التحديث", 
+      "toast.update.title.owner": "تم الإرسال للمراجعة", 
+      "toast.update.desc.admin": "تم تحديث القائمة بنجاح.", 
+      "toast.update.desc.owner": "تغييراتك قيد انتظار موافقة المسؤول.", 
+      "toast.fetchError.user": "فشل جلب بيانات المستخدم.", // 🔥 NEW
+      "toast.deleteError.userDelete": "فشل حذف المستخدم.", // 🔥 NEW
+      "toast.deleteSuccess.user": "تم حذف المستخدم بنجاح.", // 🔥 NEW
+      "toast.editError.user": "فشل تحديث بيانات المستخدم.", // 🔥 NEW
+      "toast.editSuccess.user": "تم تحديث بيانات المستخدم بنجاح.", // 🔥 NEW
+      "toast.addError.user": "فشل في إنشاء المستخدم.", // 🔥 NEW
+      "toast.addSuccess.user": "تم إنشاء المستخدم بنجاح.", // 🔥 NEW
       
-      // --- Footer ---
+      // --- Error Messages (NEW) ---
+      "error.userNotFound": "لم يتم العثور على المستخدم", // 🔥 NEW
+      "error.couldNotFetchUser": "تعذر جلب بيانات المستخدم المطلوبة.", // 🔥 NEW
+      "error.missingAuthOrId": "خطأ في الجلسة أو معرف المستخدم مفقود.", // 🔥 NEW
+      "error.missingAuth": "رمز المصادقة مفقود.", // 🔥 NEW
+      "error.missingFields": "الرجاء تعبئة جميع الحقول المطلوبة (الاسم، البريد، وكلمة المرور).", // 🔥 NEW
+      
+      // --- Footer (omitted for brevity) ---
       "footer.slogan": "اكتشف وتواصل مع أماكن رائعة حول العالم. دليلك الشامل للأعمال المحلية.",
       "footer.quickLinksTitle": "روابط سريعة",
       "footer.browseListings": "تصفح القوائم",
@@ -587,27 +766,26 @@ const resources = {
       "footer.category.seafood": "مأكولات بحرية",
       "footer.contactTitle": "اتصل",
       "footer.copyright": "© {{year}} WhereToGo. جميع الحقوق محفوظة.",
+  
 
-      // --- Language ---
+      // --- Language (omitted for brevity) ---
       "language.en": "الإنجليزية",
       "language.ar": "العربية",
 
-      // --- Map ---
+      // --- Map (omitted for brevity) ---
       "map.placeholder": "مكان مخصص لتكامل الخريطة",
       "map.config": "قم بالتهيئة باستخدام مفتاح Mapbox أو Leaflet API الخاص بك"
     }
   },
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: localStorage.getItem('language') || 'ar', // Default to Arabic
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: localStorage.getItem("language") || "ar", // Default to Arabic
+  fallbackLng: "en",
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;
