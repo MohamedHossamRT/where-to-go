@@ -37,8 +37,14 @@ exports.deleteUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    res.json({ users });
+    // Filter: Exclude users with role 'admin'
+    const users = await User.find({ role: { $ne: "admin" } });
+
+    res.status(200).json({
+      message: "success",
+      results: users.length,
+      data: { users },
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

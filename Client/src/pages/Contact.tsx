@@ -19,12 +19,17 @@ interface ContactForm {
 
 export default function Contact() {
   const { t } = useTranslation(); // Initialize translation hook
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactForm>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactForm>();
 
   const onSubmit = (data: ContactForm) => {
     console.log("Contact form:", data);
     // Use translated success message for the toast
-    toast.success(t("toast.contactSuccess")); 
+    toast.success(t("toast.contactSuccess"));
     reset();
   };
 
@@ -58,7 +63,8 @@ export default function Contact() {
                   {t("contact.card.addressTitle")} {/* Translated */}
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
-                  4517 Washington Ave.<br />
+                  4517 Washington Ave.
+                  <br />
                   Chester, Kentucky 39495
                 </p>
               </CardContent>
@@ -73,7 +79,8 @@ export default function Contact() {
                   {t("contact.card.callTitle")} {/* Translated */}
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
-                  Telephone: (603) 555-0123<br />
+                  Telephone: (603) 555-0123
+                  <br />
                   Mobile: (316) 555-0116
                 </p>
               </CardContent>
@@ -88,7 +95,8 @@ export default function Contact() {
                   {t("contact.card.emailTitle")} {/* Translated */}
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
-                  hello@wheretogo.com<br />
+                  hello@wheretogo.com
+                  <br />
                   support@wheretogo.com
                 </p>
               </CardContent>
@@ -111,8 +119,8 @@ export default function Contact() {
                       </Label>
                       <Input
                         id="name"
-                        {...register("name", { 
-                          required: t("contact.form.validation.requiredName") // Translated validation 
+                        {...register("name", {
+                          required: t("contact.form.validation.requiredName"), // Translated validation
                         })}
                         placeholder={t("contact.form.placeholder.name")} // Translated placeholder
                         className="mt-1.5 dark:bg-gray-900 dark:border-gray-600 dark:text-white"
@@ -157,7 +165,9 @@ export default function Contact() {
                     </Label>
                     <Input
                       id="subject"
-                      {...register("subject", { required: t("contact.form.validation.requiredSubject") })} // Translated validation
+                      {...register("subject", {
+                        required: t("contact.form.validation.requiredSubject"),
+                      })} // Translated validation
                       placeholder={t("contact.form.placeholder.subject")} // Translated placeholder
                       className="mt-1.5 dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                     />
@@ -175,7 +185,9 @@ export default function Contact() {
                     </Label>
                     <Textarea
                       id="message"
-                      {...register("message", { required: t("contact.form.validation.requiredMessage") })} // Translated validation
+                      {...register("message", {
+                        required: t("contact.form.validation.requiredMessage"),
+                      })} // Translated validation
                       placeholder={t("contact.form.placeholder.message")} // Translated placeholder
                       rows={6}
                       className="mt-1.5 dark:bg-gray-900 dark:border-gray-600 dark:text-white"
@@ -187,7 +199,11 @@ export default function Contact() {
                     )}
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full md:w-auto bg-[#ef4343] hover:bg-[#ff7e7e]">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full md:w-auto bg-[#ef4343] hover:bg-[#ff7e7e]"
+                  >
                     <Send className="mr-2 h-4 w-4" />
                     {t("contact.form.sendButton")} {/* Translated */}
                   </Button>
@@ -195,28 +211,8 @@ export default function Contact() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Map Placeholder */}
-          <div className="mt-16">
-            <Card className="dark:bg-gray-800 dark:border-gray-700">
-              <CardContent className="p-0">
-                <div className="flex h-96 items-center justify-center bg-muted dark:bg-gray-900">
-                  <div className="text-center">
-                    <MapPin className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
-                    <p className="text-muted-foreground dark:text-gray-400">
-                      {t("map.placeholder")} {/* Translated */}
-                    </p>
-                    <p className="text-sm text-muted-foreground dark:text-gray-500">
-                      {t("map.config")} {/* Translated */}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );
