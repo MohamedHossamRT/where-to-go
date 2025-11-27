@@ -22,6 +22,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import price1 from '../assets/budget.png';
+import price2 from '../assets/moderate.png';
+import price3 from '../assets/expensive.png';
+import price4 from '../assets/luxury.png';
+
+// 
+const priceImages = {
+  1: price1,
+  2: price2,
+  3: price3,
+  4: price4,
+} as const;
+
+// 
 interface Restaurant {
   _id: string;
   name: string;
@@ -364,11 +378,11 @@ const Listings: React.FC = () => {
             >
               <Card className="group relative overflow-visible transition-all hover:shadow-lg h-full bg-card text-foreground border border-border p-0 pb-5">
                 <CardContent className="p-0">
-                  <div className="relative aspect-4/3 overflow-hidden">
+                  <div className="relative aspect-4/3  overflow-hidden">
                     <img
-                      src={img}
+                      src={priceImages[item.priceLevel] || priceImages[1]}
                       alt={item.name}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                      className="h-full w-full object-cover object-[center_top] transition-transform group-hover:scale-110"
                     />
                     <Button
                       size="icon"
