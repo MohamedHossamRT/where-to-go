@@ -49,7 +49,6 @@ const Listings: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isFavorite, setIsFavorite] = useState<Record<string, boolean>>({});
   const [sortOption, setSortOption] = useState<string>("default");
-  const [viewType, setViewType] = useState<string>("grid");
   const [visibleCount, setVisibleCount] = useState(20);
 
   const cityFilter = searchParams.get("city");
@@ -301,58 +300,7 @@ const Listings: React.FC = () => {
           <option value="highRating">Highest Rating</option>
         </select>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => setViewType("grid")}
-            disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
-      ${
-        viewType === "grid"
-          ? "bg-[#ef4343] text-white"
-          : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343]"
-      }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h4V4H4v2zm6 0h4V4h-4v2zm6 0h4V4h-4v2zM4 12h4v-2H4v2zm6 0h4v-2h-4v2zm6 0h4v-2h-4v2zM4 18h4v-2H4v2zm6 0h4v-2h-4v2zm6 0h4v-2h-4v2z"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={() => setViewType("list")}
-            disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
-      ${
-        viewType === "list"
-          ? "bg-[#ef4343] text-white"
-          : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343]"
-      }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        </div>
+       
       </div>
 
       {error && (
@@ -407,13 +355,7 @@ const Listings: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div
-          className={
-            viewType === "grid"
-              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6"
-              : "grid grid-cols-1 gap-6 p-15 md:w-[40%] mr-auto ml-auto mt-4"
-          }
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
           {restaurants.slice(0, visibleCount).map((item) => (
             <Link
               key={item._id}
