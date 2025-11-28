@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import heroimg from "../assets/hero-bg.jpg";
+import heroimg from "../assets/hero-bg5.jpg";
 import heroimgDark from "../assets/herosection.jpg";
 // API Configuration
 const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
@@ -118,12 +118,12 @@ const Home: React.FC = () => {
         <div className="relative h-[600px] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" />
           <div
-            className="absolute inset-0  bg-cover bg-center opacity-40 dark:opacity-0"
+            className="absolute inset-0  bg-cover bg-center opacity-90 dark:opacity-0"
             style={{ backgroundImage: `url(${heroimg})` }}
           />
           {/*  */}
           <div
-  className="absolute inset-0 bg-cover bg-center opacity-40 dark:block hidden"
+  className="absolute inset-0 bg-cover bg-center opacity-80 dark:block hidden"
   style={{
     backgroundImage: `url(${heroimgDark})`,
   }}
