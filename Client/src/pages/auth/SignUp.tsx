@@ -314,7 +314,7 @@ export default function SignUp() {
                   htmlFor="isOwner"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer dark:text-gray-300"
                 >
-                  {t("auth.label.isOwner")} {/* Translated */}
+                  {t("auth.label.isOwner")}  
                 </Label>
               </div>
             </CardContent>

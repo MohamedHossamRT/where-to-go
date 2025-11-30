@@ -362,7 +362,7 @@ const ListingDetails: React.FC = () => {
                       <MapPin className="h-5 w-5 text-[#ef4343] mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="font-semibold text-gray-900 dark:text-white mb-1">
-                          {t('listing.address')}
+                          {t("listing.address")}
                         </p>
                         <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                           {restaurant.address}
@@ -384,26 +384,39 @@ const ListingDetails: React.FC = () => {
                 )}
 
                 <div className="space-y-2 pb-4 border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-[#ef4343] mt-1 flex-shrink-0" />
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-900 dark:text-white mb-1">
-                        {t('listing.phone')}
-                      </p>
-                      {restaurant.phone ? (
-                        <a
-                          href={`tel:${restaurant.phone}`}
-                          className="text-[#ef4343] hover:underline font-medium"
-                        >
-                          {restaurant.phone}
-                        </a>
-                      ) : (
-                        <p className="text-gray-500 dark:text-gray-400 italic">
-                          {t('listing.phoneComingSoon')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                 <div className="space-y-2 pb-4 border-b border-gray-200 dark:border-gray-700">
+    {/* الحاوية الرئيسية - نستخدم 'flex' ونثبت الأيقونة في أقصى اليمين في وضع RTL */}
+    <div className="flex items-start gap-3">
+        
+        {/* أيقونة الهاتف - تثبيت الأيقونة في موقعها */}
+        <Phone 
+            className="h-5 w-5 text-[#ef4343] mt-1 flex-shrink-0" 
+            // نستخدم فئات RTL لتغيير الهامش (margin) لتبتعد عن النص
+            style={{ marginInlineEnd: '0.75rem' }} 
+        />
+        
+        {/* حاوية النص - تشغل المساحة المتبقية وتكون محاذية لليمين في RTL */}
+        <div className="flex-1 rtl:text-right">
+            <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                {t('listing.phone')}
+            </p>
+            {restaurant.phone ? (
+                <a
+                    href={`tel:${restaurant.phone}`}
+                    className="text-[#ef4343] hover:underline font-medium block"
+                    // نستخدم CSS لتثبيت اتجاه الأرقام من LTR للقراءة الصحيحة
+                    style={{ direction: 'ltr' }} 
+                >
+                    {restaurant.phone}
+                </a>
+            ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic">
+                    {t('listing.phoneComingSoon')}
+                </p>
+            )}
+        </div>
+    </div>
+</div>
                 </div>
 
                 <div className="space-y-2 pb-4 border-b border-gray-200 dark:border-gray-700">

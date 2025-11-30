@@ -93,7 +93,7 @@ export default function AddListing() {
           <div className="mb-8">
             <h1 className="mb-2 text-3xl font-bold dark:text-white">{t("owner.addNew")}</h1>
             <p className="text-muted-foreground dark:text-gray-400">
-              {t("owner.addListingSubtitle")} {/* Translated */}
+              {t("owner.addListingSubtitle")}  
             </p>
           </div>
 

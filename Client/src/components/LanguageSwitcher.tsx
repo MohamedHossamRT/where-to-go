@@ -33,13 +33,13 @@ export function LanguageSwitcher() {
           onClick={() => changeLanguage('en')}
           className={i18n.language === 'en' ? 'bg-muted dark:bg-gray-700' : 'dark:hover:bg-gray-700'}
         >
-          {t('language.en')} {/* Translated */}
+          {t('language.en')} 
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => changeLanguage('ar')}
           className={i18n.language === 'ar' ? 'bg-muted dark:bg-gray-700' : 'dark:hover:bg-gray-700'}
         >
-          {t('language.ar')} {/* Translated */}
+          {t('language.ar')} 
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

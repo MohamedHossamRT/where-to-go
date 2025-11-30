@@ -248,7 +248,7 @@ export default function Profile() {
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      {t("dialog.favRemove.title")} {/* Translated */}
+                                      {t("dialog.favRemove.title")}  
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
                                       {t("dialog.favRemove.desc", {
@@ -258,7 +258,7 @@ export default function Profile() {
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>
-                                      {t("common.cancel")} {/* Translated */}
+                                      {t("common.cancel")}  
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                       className="bg-destructive hover:bg-destructive/90"
@@ -266,7 +266,7 @@ export default function Profile() {
                                         deleteFavoriteMutation.mutate(item._id)
                                       }
                                     >
-                                      {t("common.remove")} {/* Translated */}
+                                      {t("common.remove")}  
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -301,27 +301,27 @@ export default function Profile() {
                           disabled={clearHistoryMutation.isPending}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {t("dialog.historyClear.button")} {/* Translated */}
+                          {t("dialog.historyClear.button")}  
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            {t("dialog.historyClear.title")} {/* Translated */}
+                            {t("dialog.historyClear.title")}  
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {t("dialog.historyClear.desc")} {/* Translated */}
+                            {t("dialog.historyClear.desc")}  
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>
-                            {t("common.cancel")} {/* Translated */}
+                            {t("common.cancel")}  
                           </AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive hover:bg-destructive/90"
                             onClick={() => clearHistoryMutation.mutate()}
                           >
-                            {t("dialog.historyClear.confirm")} {/* Translated */}
+                            {t("dialog.historyClear.confirm")}  
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -351,7 +351,7 @@ export default function Profile() {
                             variant="outline"
                             onClick={() => navigate(`/listing/${item._id}`)}
                           >
-                            {t("common.view")} {/* Translated */}
+                            {t("common.view")}  
                           </Button>
                         </div>
                       </Card>

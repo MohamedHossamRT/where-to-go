@@ -36,12 +36,12 @@ export function ListingCard({ listing, userLocation }: ListingCardProps) {
           />
           {listing.isOpen && (
             <Badge className="absolute left-3 top-3 bg-success">
-              {t("listing.status.open")} {/* Translated */}
+              {t("listing.status.open","Open Now")}  
             </Badge>
           )}
           {listing.isFeatured && (
             <Badge className="absolute right-3 top-3 bg-accent">
-              {t("listing.status.featured")} {/* Translated */}
+              {t("listing.status.featured","Featured")}  
             </Badge>
           )}
           <Button

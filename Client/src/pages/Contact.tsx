@@ -41,10 +41,10 @@ export default function Contact() {
       <div className="border-b bg-muted/30 dark:bg-gray-800 dark:border-gray-700">
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="mb-4 text-4xl font-bold dark:text-white">
-            {t("contact.header.title")} {/* Translated */}
+            {t("contact.header.title")}  
           </h1>
           <p className="text-lg text-muted-foreground dark:text-gray-300">
-            {t("contact.header.subtitle")} {/* Translated */}
+            {t("contact.header.subtitle")}  
           </p>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function Contact() {
                   <MapPin className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="mb-2 font-semibold dark:text-white">
-                  {t("contact.card.addressTitle")} {/* Translated */}
+                  {t("contact.card.addressTitle")}  
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
                   4517 Washington Ave.
@@ -76,7 +76,7 @@ export default function Contact() {
                   <Phone className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="mb-2 font-semibold dark:text-white">
-                  {t("contact.card.callTitle")} {/* Translated */}
+                  {t("contact.card.callTitle")}  
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
                   Telephone: (603) 555-0123
@@ -92,7 +92,7 @@ export default function Contact() {
                   <Mail className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="mb-2 font-semibold dark:text-white">
-                  {t("contact.card.emailTitle")} {/* Translated */}
+                  {t("contact.card.emailTitle")}  
                 </h3>
                 <p className="text-sm text-muted-foreground dark:text-gray-400">
                   hello@wheretogo.com
@@ -108,14 +108,14 @@ export default function Contact() {
             <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
                 <h2 className="mb-6 text-2xl font-bold dark:text-white">
-                  {t("contact.form.title")} {/* Translated */}
+                  {t("contact.form.title")}  
                 </h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     {/* Name */}
                     <div>
                       <Label htmlFor="name">
-                        {t("contact.form.label.name")} {/* Translated */}
+                        {t("contact.form.label.name")}  
                       </Label>
                       <Input
                         id="name"
@@ -135,7 +135,7 @@ export default function Contact() {
                     {/* Email */}
                     <div>
                       <Label htmlFor="email">
-                        {t("contact.form.label.email")} {/* Translated */}
+                        {t("contact.form.label.email")}  
                       </Label>
                       <Input
                         id="email"
@@ -161,7 +161,7 @@ export default function Contact() {
                   {/* Subject */}
                   <div>
                     <Label htmlFor="subject">
-                      {t("contact.form.label.subject")} {/* Translated */}
+                      {t("contact.form.label.subject")}  
                     </Label>
                     <Input
                       id="subject"
@@ -181,7 +181,7 @@ export default function Contact() {
                   {/* Message */}
                   <div>
                     <Label htmlFor="message">
-                      {t("contact.form.label.message")} {/* Translated */}
+                      {t("contact.form.label.message")}  
                     </Label>
                     <Textarea
                       id="message"
@@ -205,7 +205,7 @@ export default function Contact() {
                     className="w-full md:w-auto bg-[#ef4343] hover:bg-[#ff7e7e]"
                   >
                     <Send className="mr-2 h-4 w-4" />
-                    {t("contact.form.sendButton")} {/* Translated */}
+                    {t("contact.form.sendButton")}  
                   </Button>
                 </form>
               </CardContent>

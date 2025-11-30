@@ -31,7 +31,14 @@ const resources = {
       "home.features.feature3.desc": "Read honest reviews and ratings from our community of explorers.",
       "home.stats.title": "Our Success in Numbers",
       "home.stats.subtitle": "The metrics that reflect our commitment to the community.",
-      
+      "stats.amazingPlaces": "Amazing Places",
+      "stats.support": "Support",
+      "stats.hereWhenNeed":"We're here whenever you need",
+      "stats.curatedExperiences": "Curated experiences await",
+      "stats.priceLevels": "Price Levels",
+      "stats.optionsForBudget": "Options for every budget",
+      "stats.citiesAvailable": "Cities Available",
+      "stats.exploreDestinations": "Explore destinations worldwide",
       // --- Search & Filters ---
       "search.placeholder": "Search locations...",
       "search.filters": "Filters",
@@ -98,7 +105,26 @@ const resources = {
       "table.head.rating": "Rating",
       "table.head.status": "Status",
       "table.head.actions": "Actions",
-
+      "owner.validation.requiredMapLink":"valid Google Maps link is required",
+      "owner.validation.requiredName": "Name is required",
+      ///////////////////////////////////
+      "listing.contactInfo": "Contact Information",
+      "listing.address": "Address",
+      "listing.phone": "Phone",
+      'listing.phoneComingSoon': "Coming Soon!",
+      'listing.website': "Website",
+      'listing.notAvailable': "N/A",
+      'listing.budget': "Budget",
+      'listing.moderate': "Moderate",
+      'listing.upscale':" Upscale",
+      'listing.fineDining': "Fine Dining",
+      'listing.callNow': "Call Now",
+      'listing.openInMaps': "Open in Maps",
+      'listing.about': "About this place",
+      "listing.categories": "Categories",
+      "listing.aboutText": "Discover {{name}} in {{city}}, which is categorized as {{category}}." ,
+      'listing.backToListings': "Back to Listings",
+      'listing.restaurant': "Restaurant",
       // --- Category ---
       "category.countDisplay": "({{count}})",
 
@@ -173,12 +199,12 @@ const resources = {
       "dashboard.user.deleteSuccess": "User deleted successfully",
       "dashboard.user.edit": "Edit",
 
-      // --- User Roles ---
+      // --- User Roles (NEW) ---
       "roles.user": "User", 
       "roles.owner": "Owner",
       "roles.admin": "Admin",
 
-      // --- Add User ---
+      // --- Add User (NEW) ---
       "addUser.title": "Add New User",
       "addUser.subtitle": "Create a new user account and set their role",
       "addUser.form.name": "Full Name",
@@ -191,7 +217,7 @@ const resources = {
       "addUser.form.selectRole": "Select a role",
       "addUser.form.addButton": "Add User",
       
-      // --- Edit User ---
+      // --- Edit User (NEW) ---
       "editUser.title": "Edit User: {{name}}",
       "editUser.subtitle": "Update user details and permissions",
       "editUser.selfRoleWarning": "You cannot change the role of your own admin account.",
@@ -205,7 +231,7 @@ const resources = {
       "toast.editSuccess.user": "User data updated successfully.",
       "toast.addError.user": "Failed to create user.",
       "toast.addSuccess.user": "User created successfully.",
-
+      
       // --- Owner ---
       "owner.myListings": "My Listings",
       "owner.addNew": "Add New Listing",
@@ -253,7 +279,7 @@ const resources = {
       "owner.form.placeholder.website": "e.g., https://example.com",
       "owner.form.submitAdmin": "Save Changes",
       "owner.form.submitOwner": "Submit for Review",
-      "owner.form.mapsLinkHint": "You can find this link by sharing the location from Google Maps.", // NEW
+      "owner.form.mapsLinkHint": "You can find this link by sharing the location from Google Maps.", 
       
       // --- Contact ---
       "contact.title": "Contact Us",
@@ -373,10 +399,10 @@ const resources = {
       "toast.fetchError.user": "Failed to fetch user data.",
       "toast.deleteError.userDelete": "Failed to delete user.",
       "toast.deleteSuccess.user": "User deleted successfully.",
-      "toast.editError.user": "Failed to update user data.",
-      "toast.editSuccess.user": "User data updated successfully.",
-      "toast.addError.user": "Failed to create user.",
-      "toast.addSuccess.user": "User created successfully.",
+      // "toast.editError.user": "Failed to update user data.",
+      // "toast.editSuccess.user": "User data updated successfully.",
+      // "toast.addError.user": "Failed to create user.",
+      // "toast.addSuccess.user": "User created successfully.",
       
       // --- Footer ---
       "footer.slogan": "Discover and connect with great places around the world. Your ultimate directory for local businesses.",
@@ -429,7 +455,14 @@ const resources = {
       "home.features.feature3.desc": "اقرأ التقييمات والآراء الصادقة من مجتمع المستكشفين لدينا.",
       "home.stats.title": "نجاحنا بالأرقام",
       "home.stats.subtitle": "المقاييس التي تعكس التزامنا تجاه المجتمع.",
-      
+      "stats.amazingPlaces": "اماكن مذهلة",
+      "stats.support": "الدعم",
+      "stats.hereWhenNeed":"نحن هنا متى ما احتجت",
+      "stats.curatedExperiences": "تجارب منسقة في انتظارك",
+      "stats.priceLevels": "مستويات الأسعار",
+      "stats.optionsForBudget": "خيارات لكل ميزانية",
+      "stats.citiesAvailable": "مدن متاحة",
+      "stats.exploreDestinations": "استكشف وجهات حول العالم",
       // --- Search & Filters ---
       "search.placeholder": "ابحث عن الأماكن...",
       "search.filters": "التصفية",
@@ -460,6 +493,10 @@ const resources = {
       "filter.unit.km": "كم",
       "filter.clear": "مسح",
       "filter.apply": "تطبيق عوامل التصفية",
+      "search.summaryPrefix": "البحث عن أماكن",
+      "search.summaryInCity": "في {{city}}",
+      "search.summaryWith": " مع مستوى سعر",
+      "search.summaryPrice": "{{priceLevel}}",
 
       // --- Listings Data & Table ---
       "listing.rating": "التقييم",
@@ -496,7 +533,25 @@ const resources = {
       "table.head.rating": "التقييم",
       "table.head.status": "الحالة",
       "table.head.actions": "الإجراءات",
-
+"owner.validation.requiredMapLink": "رابط الموقع مطلوب",
+"owner.validation.requiredName": "الاسم مطلوب",
+"listing.contactInfo": "معلومات الاتصال",
+      "listing.address": "العنوان",
+      "listing.phone": "الهاتف",
+      'listing.phoneComingSoon': "قريباً!",
+      'listing.website': "الموقع الإلكتروني",
+      'listing.notAvailable': "غير متوفر",
+      'listing.budget': "اقتصادي",
+      'listing.moderate': "متوسط",
+      'listing.upscale':" راقي",
+      'listing.fineDining': "مطعم فاخر",
+      'listing.callNow': "اتصل الآن",
+      'listing.openInMaps': "افتح في الخرائط",
+      'listing.about': "حول هذا المكان",
+      "listing.categories": "الفئة",
+      'listing.aboutText':"اكتشف {{name}} في مدينة {{city}}، المصنف ك  {{category}}.",
+      'listing.backToListings': "العودة إلى القوائم",
+      'listing.restaurant': "مطعم",
       // --- Category ---
       "category.countDisplay": "({{count}})",
 
@@ -618,7 +673,7 @@ const resources = {
       "owner.form.placeholder.website": "مثال: https://example.com",
       "owner.form.submitAdmin": "حفظ التغييرات",
       "owner.form.submitOwner": "إرسال للمراجعة",
-      "owner.form.mapsLinkHint": "يمكنك العثور على هذا الرابط بمشاركة الموقع من خرائط جوجل.", // NEW
+      "owner.form.mapsLinkHint": "يمكنك العثور على هذا الرابط بمشاركة الموقع من خرائط جوجل.",
 
       // --- Contact ---
       "contact.title": "اتصل بنا",
@@ -702,7 +757,7 @@ const resources = {
       "upload.changePhoto": "تغيير الصورة",
       "upload.uploadPhoto": "تحميل صورة",
       "upload.optionalMax": "اختياري • بحد أقصى 5 ميجابايت",
-      
+
       // --- Toasts ---
       "toast.loginRequired.title": "يتطلب تسجيل الدخول",
       "toast.loginRequired.desc": "يرجى تسجيل الدخول لإدارة مفضلاتك.",

@@ -183,7 +183,7 @@ export default function AddListing() {
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8 rtl:text-right">
             <h1 className="mb-2 text-3xl font-bold dark:text-white">
-              {t("owner.addNew")}
+              {t("owner.addNew", "Add New Listing")}
             </h1>
             <p className="text-muted-foreground dark:text-gray-400">
               {user?.role === "admin"
@@ -198,7 +198,7 @@ export default function AddListing() {
           >
             <CardHeader>
               <CardTitle className="rtl:text-right dark:text-white">
-                {t("owner.form.cardTitle")}
+                {t("owner.form.cardTitle", "Listing Details")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -210,14 +210,14 @@ export default function AddListing() {
                       htmlFor="name"
                       className="rtl:text-right block dark:text-gray-300"
                     >
-                      {t("owner.form.label.placeName")}
+                      {t("owner.form.label.placeName", "Place Name *")}
                     </Label>
                     <Input
                       id="name"
                       placeholder={t("owner.form.placeholder.placeName")}
                       className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("name", {
-                        required: t("owner.validation.requiredName"),
+                        required: t("owner.validation.requiredName", "Name is required"),
                       })}
                     />
                     {errors.name && (
@@ -233,13 +233,13 @@ export default function AddListing() {
                       htmlFor="city"
                       className="rtl:text-right block dark:text-gray-300"
                     >
-                      {t("owner.form.label.city")}
+                      {t("owner.form.label.city", "City *")}
                     </Label>
                     <Input
                       id="city"
                       className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("city", {
-                        required: t("owner.validation.requiredCity"),
+                        required: t("owner.validation.requiredCity", "City is required"),
                       })}
                     />
                     {errors.city && (
@@ -256,14 +256,14 @@ export default function AddListing() {
                     htmlFor="address"
                     className="rtl:text-right block dark:text-gray-300"
                   >
-                    {t("owner.form.label.address")}
+                    {t("owner.form.label.address", "Address *")}
                   </Label>
                   <Textarea
                     id="address"
                     placeholder={t("owner.form.placeholder.address")}
                     className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     {...register("address", {
-                      required: t("owner.validation.requiredAddress"),
+                      required: t("owner.validation.requiredAddress", "Address is required"),
                     })}
                   />
                   {errors.address && (
@@ -275,30 +275,26 @@ export default function AddListing() {
 
                 {/* Google Maps Link */}
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="googleMapsLink"
-                    className="rtl:text-right block dark:text-gray-300"
-                  >
-                    {t("owner.form.label.mapsLink")}
-                  </Label>
-                  <Input
-                    id="googleMapsLink"
-                    type="url"
-                    className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder={t("owner.form.placeholder.maps")}
-                    {...register("googleMapsLink", {
-                      required: t("owner.validation.requiredMapLink"),
-                    })}
-                  />
-                  <p className="text-xs text-muted-foreground dark:text-gray-400 rtl:text-right">
-                    {t("owner.form.mapsLinkHint")}
-                  </p>
-                  {errors.googleMapsLink && (
-                    <p className="text-sm text-destructive rtl:text-right">
-                      {errors.googleMapsLink.message}
-                    </p>
-                  )}
-                </div>
+  <Label
+    htmlFor="googleMapsLink"
+    className="rtl:text-right block dark:text-gray-300"
+  >
+    {t("owner.form.label.mapsLink")}
+  </Label>
+
+  <Input
+    id="googleMapsLink"
+    type="url"
+    className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+    placeholder={t("owner.form.placeholder.maps", "Paste new Google Maps link to change location...")}
+    {...register("googleMapsLink")}
+  />
+
+  <p className="text-xs text-muted-foreground dark:text-gray-400 rtl:text-right">
+    {t("owner.form.mapsLinkHint","You can find this link by sharing the location from Google Maps.", )}
+  </p>
+</div>
+
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Category */}
@@ -307,14 +303,14 @@ export default function AddListing() {
                       htmlFor="category"
                       className="rtl:text-right block dark:text-gray-300"
                     >
-                      {t("owner.form.label.category")}
+                      {t("owner.form.label.category", "Category *")}
                     </Label>
                     <Input
                       id="category"
                       placeholder={t("owner.form.placeholder.category")}
                       className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("category", {
-                        required: t("owner.validation.requiredCategory"),
+                        required: t("owner.validation.requiredCategory", "Category is required"),
                       })}
                     />
                     {errors.category && (
@@ -330,7 +326,7 @@ export default function AddListing() {
                       htmlFor="priceLevel"
                       className="rtl:text-right block dark:text-gray-300"
                     >
-                      {t("owner.form.label.priceLevel")}
+                      {t("owner.form.label.priceLevel", "Price Level (1-4) *")}
                     </Label>
                     <Input
                       id="priceLevel"
@@ -339,15 +335,15 @@ export default function AddListing() {
                       max="4"
                       className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("priceLevel", {
-                        required: t("owner.validation.requiredPriceLevel"),
+                        required: t("owner.validation.requiredPriceLevel", "Price Level is required"),
                         valueAsNumber: true,
                         min: {
                           value: 1,
-                          message: t("owner.validation.priceLevelMin"),
+                          message: t("owner.validation.priceLevelMin","Min 1"),
                         },
                         max: {
                           value: 4,
-                          message: t("owner.validation.priceLevelMax"),
+                          message: t("owner.validation.priceLevelMax","Max 4"),
                         },
                       })}
                     />
@@ -364,11 +360,11 @@ export default function AddListing() {
                       htmlFor="phone"
                       className="rtl:text-right block dark:text-gray-300"
                     >
-                      {t("owner.form.label.phone")}
+                      {t("owner.form.label.phone", "Phone")}
                     </Label>
                     <Input
                       id="phone"
-                      placeholder={t("owner.form.placeholder.phone")}
+                      placeholder={t("owner.form.placeholder.phone", "Enter phone number")}
                       className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("phone")}
                     />
@@ -381,12 +377,12 @@ export default function AddListing() {
                     htmlFor="website"
                     className="rtl:text-right block dark:text-gray-300"
                   >
-                    {t("owner.form.label.website")}
+                    {t("owner.form.label.website", "Website")}
                   </Label>
                   <Input
                     id="website"
                     type="url"
-                    placeholder={t("owner.form.placeholder.website")}
+                    placeholder={t("owner.form.placeholder.website", "Enter website URL")}
                     className="rtl:text-right dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     {...register("website")}
                   />
@@ -404,7 +400,7 @@ export default function AddListing() {
                     disabled={isLoading}
                     className="dark:text-white dark:hover:bg-gray-700"
                   >
-                    {t("common.cancel")}
+                    {t("common.cancel", "Cancel")}
                   </Button>
                   <Button
                     type="submit"

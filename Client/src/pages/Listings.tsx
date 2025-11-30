@@ -256,13 +256,13 @@ const Listings: React.FC = () => {
       <div className="flex flex-col w-full h-auto bg-gray-100 dark:bg-background py-5">
         <div className="container mx-auto px-4 md:px-20">
           <h2 className="text-black font-bold text-4xl dark:text-white">
-            {t("allListings")} {/* Translated */}
+            {t("allListings")}  
           </h2>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-gray-400 text-2xl mt-2">
               {hasActiveFilters
                 ? t("filteredResults") // Translated
-                : t("showingAllResults")} {/* Translated */}
+                : t("showingAllResults")}  
             </span>
             {hasActiveFilters && (
               <div className="flex items-center gap-2 mt-2">
@@ -289,7 +289,7 @@ const Listings: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
           >
             <X className="w-4 h-4" />
-            {t("clearFilters")} {/* Translated */}
+            {t("clearFilters")}  
           </button>
         )}
 
@@ -299,9 +299,9 @@ const Listings: React.FC = () => {
           onChange={(e) => handleSort(e.target.value)}
           disabled={isLoading}
         >
-          <option value="default">{t("sort.default")}</option> {/* Translated */}
-          <option value="nearest">{t("sort.nearest")}</option> {/* Translated */}
-          <option value="highRating">{t("sort.highestRating")}</option> {/* Translated */}
+          <option value="default">{t("sort.default")}</option>  
+          <option value="nearest">{t("sort.nearest")}</option>  
+          <option value="highRating">{t("sort.highestRating")}</option>  
         </select>
 
         <div className="flex gap-2">
@@ -369,7 +369,7 @@ const Listings: React.FC = () => {
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-12 w-12 text-[#ef4343] animate-spin" />
             <p className="text-gray-600 dark:text-gray-400">
-              {t("loadingPlaces")} {/* Translated */}
+              {t("loadingPlaces")}  
             </p>
           </div>
         </div>
@@ -392,19 +392,19 @@ const Listings: React.FC = () => {
               </svg>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {t("noPlaces")} {/* Translated */}
+              {t("noPlaces")}  
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               {hasActiveFilters
                 ? t("noPlacesFiltered") // Translated
-                : t("noPlacesAvailable")} {/* Translated */}
+                : t("noPlacesAvailable")}  
             </p>
             {hasActiveFilters && (
               <button
                 onClick={handleClearFilters}
                 className="px-6 py-3 bg-[#ef4343] text-white rounded-lg hover:bg-[#ff7e7e] transition font-semibold"
               >
-                {t("clearAllFilters")} {/* Translated */}
+                {t("clearAllFilters")}  
               </button>
             )}
           </div>
@@ -459,7 +459,7 @@ const Listings: React.FC = () => {
                       <span className="relative group inline-block max-w-[80px] truncate border border-gray-400 text-gray-700 text-sm font-medium px-1 rounded-full dark:text-white">
                         {item.category && item.category.length > 0
                           ? item.category[0]
-                          : t("listing.notFound")} {/* Translated */}
+                          : t("listing.notFound")}  
                       </span>
                     </div>
                   </CardTitle>
@@ -483,7 +483,7 @@ const Listings: React.FC = () => {
                         </span>
                       </div>
                       <div className="text-lg font-bold text-gray-500">
-                        {t("listing.priceLevel")}{" "} {/* Translated */}
+                        {t("listing.priceLevel")}{" "}  
                         <span className="text-[#ef4343]">{item.priceLevel}</span>
                       </div>
                     </div>
@@ -496,7 +496,7 @@ const Listings: React.FC = () => {
                     ) : (
                       <div className="mt-3 flex items-center space-x-2 text-sm text-gray-500">
                         <Phone className="h-3 w-3" />
-                        <span>{t("listing.phoneSoon")}</span> {/* Translated */}
+                        <span>{t("listing.phoneSoon")}</span>  
                       </div>
                     )}
                   </div>

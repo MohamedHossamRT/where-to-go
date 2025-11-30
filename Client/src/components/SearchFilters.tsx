@@ -51,7 +51,7 @@ export function SearchFilters() {
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground dark:text-gray-500" />
         <Input
           type="text"
-          placeholder={t("search.placeholder")} {/* Translated */}
+          placeholder={t("search.placeholder")} 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -62,7 +62,7 @@ export function SearchFilters() {
         <SheetTrigger asChild>
           <Button variant="outline" className="relative dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-white dark:hover:text-white">
             <SlidersHorizontal className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
-            {t("filter.button")} {/* Translated */}
+            {t("filter.button")} 
             {activeFiltersCount > 0 && (
               <span className="ml-1 rounded-full bg-[#ef4343] px-1.5 py-0.5 text-xs text-white">
                 {activeFiltersCount}
@@ -72,16 +72,16 @@ export function SearchFilters() {
         </SheetTrigger>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto dark:bg-gray-900 dark:border-gray-700">
           <SheetHeader>
-            <SheetTitle className="dark:text-white">{t("filter.sheetTitle")}</SheetTitle> {/* Translated */}
+            <SheetTitle className="dark:text-white">{t("filter.sheetTitle")}</SheetTitle>  
             <SheetDescription className="dark:text-gray-400">
-              {t("filter.sheetDesc")} {/* Translated */}
+              {t("filter.sheetDesc")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="mt-6 space-y-6">
             {/* Categories */}
             <div>
-              <Label className="mb-3 block text-base dark:text-white">{t("filter.label.categories")}</Label> {/* Translated */}
+              <Label className="mb-3 block text-base dark:text-white">{t("filter.label.categories")}</Label>  
               {/* Note: Category rendering logic is omitted, but categories would be rendered here */}
             </div>
 
@@ -90,7 +90,7 @@ export function SearchFilters() {
               <Label className="mb-3 block text-base dark:text-white">
                 {t("filter.label.priceRange")}{" "}
                 <span className="font-bold">${priceRange[0]} - ${priceRange[1]}</span>
-              </Label> {/* Translated */}
+              </Label>  
               <Slider
                 min={0}
                 max={500}
@@ -110,7 +110,7 @@ export function SearchFilters() {
                 <span className="font-bold">
                   {distance} {t("filter.unit.km")}
                 </span>
-              </Label> {/* Translated */}
+              </Label>  
               <Slider
                 min={1}
                 max={100}
@@ -132,10 +132,10 @@ export function SearchFilters() {
                 }}
               >
                 <X className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
-                {t("filter.clear")} {/* Translated */}
+                {t("filter.clear")}  
               </Button>
               <Button className="flex-1 bg-[#ef4343] hover:bg-[#ff7e7e]" onClick={() => setOpen(false)}>
-                {t("filter.apply")} {/* Translated */}
+                {t("filter.apply")}  
               </Button>
             </div>
           </div>
