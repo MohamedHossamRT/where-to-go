@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(mongoSanitize());
 app.use(
   cors({
-    origin: ["https://where-to-go.vercel.app", "http://localhost:8080/"],
+    origin: ["https://where-to-go-one.vercel.app/", "http://localhost:8080/"],
     credentials: true,
   })
 );
