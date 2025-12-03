@@ -15,6 +15,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import heroimg from "../assets/hero-bg.jpg";
 import { useTranslation } from "react-i18next"; // <-- Import i18n
+import lightimg from "../assets/catherine-heath-dDx5sUb-ukk-unsplash.jpg"
+import darktimg from "../assets/vishwas-katti-UrQ_BS9bLXQ-unsplash.jpg"
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -121,9 +123,15 @@ const Home: React.FC = () => {
         <div className="relative h-[600px] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" />
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-40"
-            style={{ backgroundImage: `url(${heroimg})` }}
+            className="absolute inset-0 bg-cover bg-center opacity-40 dark:opacity-0"
+            style={{ backgroundImage: `url(${lightimg})` }}
           />
+           {/* Dark Mode Image */}
+  <div
+    className="absolute inset-0 bg-cover bg-center opacity-40 hidden dark:block"
+    style={{ backgroundImage: `url(${darktimg})` }}
+  />
+
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
           <div className="relative z-10 text-center px-4 max-w-4xl">
