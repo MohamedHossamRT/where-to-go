@@ -1,15 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const mongoSanitize = require("express-mongo-sanitize");
+// const mongoSanitize = require("express-mongo-sanitize");
 
 // Middlewares
 const app = express();
 app.use(express.json());
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 app.use(
   cors({
-    origin: ["https://where-to-go-one.vercel.app/", "http://localhost:8080/"],
+    origin: ["https://where-to-go-one.vercel.app/", "http://localhost:8080"],
     credentials: true,
   })
 );
