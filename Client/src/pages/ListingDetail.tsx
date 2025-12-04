@@ -22,6 +22,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import imgBudget from "../assets/budgetprice.jpg";
+import imgModerate from "../assets/moderate.jpg";
+import imgExpensive from "../assets/expensive.jpg";
+import imgLuxury from "../assets/luxury2.jpg";
 
 interface Location {
   type: string;
@@ -233,6 +237,23 @@ const ListingDetails: React.FC = () => {
     );
   }
 
+   // 
+      const getPriceImage = (priceLevel?: number) => {
+  switch (priceLevel) {
+    case 1:
+      return imgBudget;
+    case 2:
+      return imgModerate;
+    case 3:
+      return imgExpensive;
+    case 4:
+      return imgLuxury;
+    default:
+      return imgBudget; 
+  }
+};
+// 
+
   return (
     <>
       <Header />
@@ -253,9 +274,9 @@ const ListingDetails: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
               <img
-                src={img}
+               src={getPriceImage(restaurant.priceLevel)}
                 alt={restaurant.name}
-                className="w-full h-[400px] object-cover"
+                className="w-full h-[400px] object-fit"
               />
 
               <Button

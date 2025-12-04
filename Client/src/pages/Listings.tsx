@@ -22,6 +22,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import imgBudget from "../assets/budgetprice.jpg";
+import imgModerate from "../assets/moderate.jpg";
+import imgExpensive from "../assets/expensive.jpg";
+import imgLuxury from "../assets/luxury2.jpg";
 
 interface Restaurant {
   _id: string;
@@ -250,6 +254,22 @@ const Listings: React.FC = () => {
   };
 
   const hasActiveFilters = cityFilter || priceLevelFilter;
+ // 
+      const getPriceImage = (priceLevel?: number) => {
+  switch (priceLevel) {
+    case 1:
+      return imgBudget;
+    case 2:
+      return imgModerate;
+    case 3:
+      return imgExpensive;
+    case 4:
+      return imgLuxury;
+    default:
+      return imgBudget; 
+  }
+};
+// 
 
   return (
     <>
@@ -309,7 +329,7 @@ const Listings: React.FC = () => {
           <button
             onClick={() => setViewType("grid")}
             disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed
       ${
         viewType === "grid"
           ? "bg-[#ef4343] text-white"
@@ -334,7 +354,7 @@ const Listings: React.FC = () => {
           <button
             onClick={() => setViewType("list")}
             disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed
       ${
         viewType === "list"
           ? "bg-[#ef4343] text-white"
@@ -428,9 +448,9 @@ const Listings: React.FC = () => {
                 <CardContent className="p-0">
                   <div className="relative aspect-4/3 overflow-hidden">
                     <img
-                      src={img}
+                      src={getPriceImage(item.priceLevel)}
                       alt={item.name}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                      className="h-full w-full object-fit transition-transform group-hover:scale-110"
                     />
                     <Button
                       size="icon"
