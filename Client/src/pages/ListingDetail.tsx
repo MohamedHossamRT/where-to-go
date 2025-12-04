@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import img from "../assets/Cardimg.png";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -237,22 +236,22 @@ const ListingDetails: React.FC = () => {
     );
   }
 
-   // 
-      const getPriceImage = (priceLevel?: number) => {
-  switch (priceLevel) {
-    case 1:
-      return imgBudget;
-    case 2:
-      return imgModerate;
-    case 3:
-      return imgExpensive;
-    case 4:
-      return imgLuxury;
-    default:
-      return imgBudget; 
-  }
-};
-// 
+  //
+  const getPriceImage = (priceLevel?: number) => {
+    switch (priceLevel) {
+      case 1:
+        return imgBudget;
+      case 2:
+        return imgModerate;
+      case 3:
+        return imgExpensive;
+      case 4:
+        return imgLuxury;
+      default:
+        return imgBudget;
+    }
+  };
+  //
 
   return (
     <>
@@ -274,7 +273,7 @@ const ListingDetails: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
               <img
-               src={getPriceImage(restaurant.priceLevel)}
+                src={getPriceImage(restaurant.priceLevel)}
                 alt={restaurant.name}
                 className="w-full h-[400px] object-fit"
               />
