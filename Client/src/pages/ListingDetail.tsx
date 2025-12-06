@@ -11,21 +11,16 @@ import {
   Loader2,
   ArrowLeft,
   Navigation,
+  Utensils,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import img from "../assets/Cardimg.png";
-
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import imgBudget from "../assets/budgetprice.jpg";
-import imgModerate from "../assets/moderate.jpg";
-import imgExpensive from "../assets/expensive.jpg";
-import imgLuxury from "../assets/luxury2.jpg";
 
 interface Location {
   type: string;
@@ -237,20 +232,18 @@ const ListingDetails: React.FC = () => {
     );
   }
 
-   // 
-      const getPriceImage = (priceLevel?: number) => {
-  switch (priceLevel) {
-    case 1:
-      return imgBudget;
-    case 2:
-      return imgModerate;
-    case 3:
-      return imgExpensive;
-    case 4:
-      return imgLuxury;
-    default:
-      return imgBudget; 
-  }
+   
+const PRICE_LEVEL_COLORS: { [key: number]: string } = {
+    1: "#1A6B4C", 
+    2: "#345E9F", 
+    3: "#800020", 
+    4: "#B8860B", 
+};
+// 
+const getPriceColor = (priceLevel?: number): string => {
+    return priceLevel && PRICE_LEVEL_COLORS[priceLevel]
+        ? PRICE_LEVEL_COLORS[priceLevel]
+        : PRICE_LEVEL_COLORS[1]; 
 };
 // 
 
@@ -273,12 +266,42 @@ const ListingDetails: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
-              <img
-               src={getPriceImage(restaurant.priceLevel)}
-                alt={restaurant.name}
-                className="w-full h-[400px] object-fit"
-              />
+              {/*  */}
+            <div
+  dir="ltr"
+  className="w-full min-h-[500px] flex items-center justify-center text-white"
+  style={{ backgroundColor: getPriceColor(restaurant.priceLevel) }}
+>
+           <div className="inline-flex flex-col items-center justify-center text-center gap-3 px-6">
 
+                 <Utensils className="h-10 w-10 " /> 
+
+               <h2 className="text-5xl font-extrabold leading-tight">
+             {restaurant.name}
+              </h2>
+
+                
+               <p className="text-lg font-semibold uppercase tracking-widest text-center">
+                {restaurant.priceLevel === 1 && t("listing.budget")}
+                {restaurant.priceLevel === 2 && t("listing.moderate")}
+                {restaurant.priceLevel === 3 && t("listing.upscale")}
+                {restaurant.priceLevel === 4 && t("listing.fineDining")}
+              </p>
+
+
+                <div className="flex items-center gap-2 mt-1">
+                 <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+                  <span className="text-lg font-medium">
+                 {restaurant.ratingsAverage?.toFixed(1) || "N/A"} (
+                 {restaurant.ratingsQuantity?.toLocaleString() || 0} {t("listing.reviews")}
+                 )
+              </span>
+              </div>
+
+              </div>
+
+              </div>
+              {/*  */}
               <Button
                 size="icon"
                 onClick={toggleFavorite}
