@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Heart, History, MapPin, Star, Trash2 } from "lucide-react";
+import { Heart, History, MapPin, Star, Trash2,Utensils } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,9 @@ const USERS_API_URL = API_BASE_URL + "/api/users";
 interface FavoritePlace {
   _id: string;
   name: string;
+  priceLevel?: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
 }
 
 interface HistoryItem {
@@ -150,6 +153,19 @@ export default function Profile() {
   const fullName = user?.name || user?.email?.split("@")[0] || t("common.user"); // Added fallback translation
   const avatarUrl = user?.profilePicture;
   const userHistory: HistoryItem[] = user?.history || [];
+const PRICE_LEVEL_COLORS: { [key: number]: string } = {
+    1: "#1A6B4C", 
+    2: "#345E9F", 
+    3: "#800020", 
+    4: "#B8860B", 
+};
+// 
+const getPriceColor = (priceLevel?: number): string => {
+    return priceLevel && PRICE_LEVEL_COLORS[priceLevel]
+        ? PRICE_LEVEL_COLORS[priceLevel]
+        : PRICE_LEVEL_COLORS[1]; 
+};
+                              // onClick={() => navigate(`/listing/${item._id}`)}
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -212,14 +228,40 @@ export default function Profile() {
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                       {favorites.map((item) => (
                         <Card key={item._id} className="overflow-hidden">
-                          <div className="h-40 w-full overflow-hidden">
-                            <img
-                              src={img}
-                              alt={item.name}
-                              className="h-full w-full object-cover cursor-pointer transition-transform hover:scale-105"
-                              onClick={() => navigate(`/listing/${item._id}`)}
-                            />
-                          </div>
+                          <div
+  dir="ltr"
+  className="w-full min-h-[500px] flex items-center justify-center text-white"
+  style={{ backgroundColor: getPriceColor(item.priceLevel) }}
+>
+           <div className="inline-flex flex-col items-center justify-center text-center gap-3 px-6">
+
+                 <Utensils className="h-10 w-10 " /> 
+
+               <h2 className="text-5xl font-extrabold leading-tight">
+             {item.name}
+              </h2>
+
+                
+               <p className="text-lg font-semibold uppercase tracking-widest text-center">
+                {item.priceLevel === 1 && t("listing.budget")}
+                {item.priceLevel === 2 && t("listing.moderate")}
+                {item.priceLevel === 3 && t("listing.upscale")}
+                {item.priceLevel === 4 && t("listing.fineDining")}
+              </p>
+
+
+                <div className="flex items-center gap-2 mt-1">
+                 <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+                  <span className="text-lg font-medium">
+                 {item.ratingsAverage?.toFixed(1) || "N/A"} (
+                 {item.ratingsQuantity?.toLocaleString() || 0} {t("listing.reviews")}
+                 )
+              </span>
+              </div>
+
+              </div>
+
+              </div>
 
                           <CardContent className="p-4">
                             <h3 className="font-semibold mb-2 truncate">
