@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Heart, History, MapPin, Star, Trash2 } from "lucide-react";
+import { Heart, History, MapPin, Star, Trash2, Utensils } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -23,20 +23,133 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import img from "../assets/Cardimg.png";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const USERS_API_URL = API_BASE_URL + "/api/users";
 
+// Fixed: Added missing properties to both interfaces
 interface FavoritePlace {
   _id: string;
   name: string;
+  priceLevel?: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
 }
 
 interface HistoryItem {
   _id: string;
   name: string;
+  priceLevel?: number;
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
 }
+
+const PRICE_LEVEL_COLORS: { [key: number]: string } = {
+  1: "#1A6B4C",
+  2: "#345E9F",
+  3: "#800020",
+  4: "#B8860B",
+};
+
+const getPriceColor = (priceLevel?: number): string => {
+  return priceLevel && PRICE_LEVEL_COLORS[priceLevel]
+    ? PRICE_LEVEL_COLORS[priceLevel]
+    : PRICE_LEVEL_COLORS[1];
+};
+
+// Reusable component to avoid code duplication
+interface PlaceCardProps {
+  item: FavoritePlace | HistoryItem;
+  onView: () => void;
+  onDelete?: () => void;
+  showActions?: boolean;
+  compact?: boolean;
+  t: any;
+}
+
+const PlaceCard = ({ item, onView, onDelete, showActions = true, compact = false, t }: PlaceCardProps) => {
+  const cardContent = (
+    <div
+      dir="ltr"
+      className={`w-full ${compact ? 'h-32' : 'min-h-[200px]'} flex items-center justify-center text-white`}
+      style={{ backgroundColor: getPriceColor(item.priceLevel) }}
+    >
+      <div className="inline-flex flex-col items-center justify-center text-center gap-2 px-4">
+        <Utensils className={`${compact ? 'h-6 w-6' : 'h-10 w-10'}`} />
+
+        <h2 className={`${compact ? 'text-xl' : 'text-3xl'} font-extrabold leading-tight`}>
+          {item.name}
+        </h2>
+
+        <p className={`${compact ? 'text-xs' : 'text-sm'} font-semibold uppercase tracking-widest text-center`}>
+          {item.priceLevel === 1 && t("listing.budget")}
+          {item.priceLevel === 2 && t("listing.moderate")}
+          {item.priceLevel === 3 && t("listing.upscale")}
+          {item.priceLevel === 4 && t("listing.fineDining")}
+        </p>
+
+        {!compact && (
+          <div className="flex items-center gap-2 mt-1">
+            <Star className="h-4 w-4 text-yellow-300 fill-yellow-300" />
+            <span className="text-sm font-medium">
+              {item.ratingsAverage?.toFixed(1) || "N/A"} (
+              {item.ratingsQuantity?.toLocaleString() || 0} {t("listing.reviews")})
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  if (!showActions) {
+    return <Card className="overflow-hidden">{cardContent}</Card>;
+  }
+
+  return (
+    <Card className="overflow-hidden">
+      {cardContent}
+      <CardContent className="p-4">
+        <h3 className="font-semibold mb-2 truncate">{item.name}</h3>
+        <div className="mt-3 flex gap-2">
+          <Button size="sm" variant="outline" className="flex-1" onClick={onView}>
+            <MapPin className="mr-1 h-3 w-3" />
+            {t("common.view")}
+          </Button>
+          {onDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("dialog.favRemove.title")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("dialog.favRemove.desc", { placeName: item.name })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive hover:bg-destructive/90"
+                    onClick={onDelete}
+                  >
+                    {t("common.remove")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function Profile() {
   const { user, token } = useAuth();
@@ -46,9 +159,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   // --- Fetch Favorites ---
-  const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<
-    FavoritePlace[]
-  >({
+  const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery<FavoritePlace[]>({
     queryKey: ["profileFavorites", token],
     queryFn: async () => {
       if (!token) return [];
@@ -57,7 +168,7 @@ export default function Profile() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!favListResponse.ok) throw new Error(t("toast.error.failedFav")); // Translated error
+      if (!favListResponse.ok) throw new Error(t("toast.error.failedFav"));
 
       const favListData = await favListResponse.json();
       return favListData.data;
@@ -68,19 +179,19 @@ export default function Profile() {
   // --- Delete Favorite Mutation ---
   const deleteFavoriteMutation = useMutation({
     mutationFn: async (placeId: string) => {
-      if (!token) throw new Error(t("common.notAuthenticated")); // Translated error
+      if (!token) throw new Error(t("common.notAuthenticated"));
       const response = await fetch(`${USERS_API_URL}/favorites/${placeId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
-        let errorMessage = t("toast.error.failedFav"); // Translated error
+        let errorMessage = t("toast.error.failedFav");
         try {
           const errData = await response.json();
           if (errData.message) errorMessage = errData.message;
         } catch (e) {
-          // Use default error message if JSON parse fails
+          // Use default error message
         }
         throw new Error(errorMessage);
       }
@@ -90,12 +201,12 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       toast({
         title: t("common.success"),
-        description: t("toast.favSuccess.removed"), // Translated success
+        description: t("toast.favSuccess.removed"),
       });
     },
     onError: (error: any) => {
       toast({
-        title: t("toast.error.title"), // Translated
+        title: t("toast.error.title"),
         description: error.message,
         variant: "destructive",
       });
@@ -105,14 +216,14 @@ export default function Profile() {
   // --- Clear History Mutation ---
   const clearHistoryMutation = useMutation({
     mutationFn: async () => {
-      if (!token) throw new Error(t("common.notAuthenticated")); // Translated error
+      if (!token) throw new Error(t("common.notAuthenticated"));
       const response = await fetch(`${USERS_API_URL}/history`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
-        let errorMessage = t("toast.error.failedHistory"); // Translated error
+        let errorMessage = t("toast.error.failedHistory");
         try {
           const errData = await response.json();
           if (errData.message) errorMessage = errData.message;
@@ -126,12 +237,12 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       toast({
         title: t("common.success"),
-        description: t("toast.historySuccess.cleared"), // Translated success
+        description: t("toast.historySuccess.cleared"),
       });
     },
     onError: (error: any) => {
       toast({
-        title: t("toast.error.title"), // Translated
+        title: t("toast.error.title"),
         description: error.message,
         variant: "destructive",
       });
@@ -147,7 +258,7 @@ export default function Profile() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  const fullName = user?.name || user?.email?.split("@")[0] || t("common.user"); // Added fallback translation
+  const fullName = user?.name || user?.email?.split("@")[0] || t("common.user");
   const avatarUrl = user?.profilePicture;
   const userHistory: HistoryItem[] = user?.history || [];
 
@@ -182,10 +293,7 @@ export default function Profile() {
 
           <Tabs defaultValue="favorites" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="favorites"
-                className="flex items-center gap-2"
-              >
+              <TabsTrigger value="favorites" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" />
                 {t("nav.favorites")}
               </TabsTrigger>
@@ -211,70 +319,13 @@ export default function Profile() {
                   ) : favorites.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                       {favorites.map((item) => (
-                        <Card key={item._id} className="overflow-hidden">
-                          <div className="h-40 w-full overflow-hidden">
-                            <img
-                              src={img}
-                              alt={item.name}
-                              className="h-full w-full object-cover cursor-pointer transition-transform hover:scale-105"
-                              onClick={() => navigate(`/listing/${item._id}`)}
-                            />
-                          </div>
-
-                          <CardContent className="p-4">
-                            <h3 className="font-semibold mb-2 truncate">
-                              {item.name}
-                            </h3>
-                            <div className="mt-3 flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="flex-1"
-                                onClick={() => navigate(`/listing/${item._id}`)}
-                              >
-                                <MapPin className="mr-1 h-3 w-3" />
-                                {t("common.view")}
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="text-destructive hover:text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      {t("dialog.favRemove.title")}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      {t("dialog.favRemove.desc", {
-                                        placeName: item.name,
-                                      })}{" "}
-                                      {/* Translated and interpolated */}
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      {t("common.cancel")}
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      className="bg-destructive hover:bg-destructive/90"
-                                      onClick={() =>
-                                        deleteFavoriteMutation.mutate(item._id)
-                                      }
-                                    >
-                                      {t("common.remove")}
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <PlaceCard
+                          key={item._id}
+                          item={item}
+                          onView={() => navigate(`/listing/${item._id}`)}
+                          onDelete={() => deleteFavoriteMutation.mutate(item._id)}
+                          t={t}
+                        />
                       ))}
                     </div>
                   ) : (
@@ -315,9 +366,7 @@ export default function Profile() {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            {t("common.cancel")}
-                          </AlertDialogCancel>
+                          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive hover:bg-destructive/90"
                             onClick={() => clearHistoryMutation.mutate()}
@@ -333,20 +382,26 @@ export default function Profile() {
                   <div className="space-y-4">
                     {userHistory.map((item) => (
                       <Card key={item._id} className="overflow-hidden">
-                        <div className="flex items-center p-4">
-                          <div className="h-12 w-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
-                            <img
-                              src={img}
-                              alt={item.name}
-                              className="h-full w-full object-cover"
-                            />
+                        <div className="flex items-center p-4 gap-4">
+                          <div className="h-20 w-20 rounded-lg overflow-hidden flex-shrink-0">
+                            <div
+                              className="w-full h-full flex items-center justify-center text-white"
+                              style={{ backgroundColor: getPriceColor(item.priceLevel) }}
+                            >
+                              <Utensils className="h-8 w-8" />
+                            </div>
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold truncate">
-                              {item.name}
-                            </h3>
+                            <h3 className="font-semibold truncate mb-1">{item.name}</h3>
+                            <p className="text-xs text-muted-foreground">
+                              {item.priceLevel === 1 && t("listing.budget")}
+                              {item.priceLevel === 2 && t("listing.moderate")}
+                              {item.priceLevel === 3 && t("listing.upscale")}
+                              {item.priceLevel === 4 && t("listing.fineDining")}
+                            </p>
                           </div>
+                          
                           <Button
                             size="sm"
                             variant="outline"
