@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, DollarSign, Search, Loader2, SlidersHorizontal, X } from 'lucide-react';
+import { useTranslation } from "react-i18next"; // <-- Import i18n
 interface FilterComponentProps {
   onSearch: (filters: {
     city: string;
@@ -110,6 +111,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
   const hasActiveFilters = selectedCity || selectedPrice || selectedSort !== 'default';
 
   const isHomeVariant = variant === 'home';
+  const { t } = useTranslation(); // <-- Initialize translation hook
 
   return (
     <div className={`${isHomeVariant ? 'bg-white dark:bg-[#0f1729] rounded-2xl shadow-2xl p-6 max-w-4xl mx-auto' : 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6'}`}>
@@ -136,7 +138,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
         {/* City Dropdown */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 text-left">
-            City
+                         {t("search.city")}
           </label>
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -152,7 +154,10 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
               disabled={loadingCities}
               className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer transition-colors dark:bg-gray-700 dark:text-white dark:border-gray-600"
             >
-              <option value="">All Cities</option>
+              <option value="">
+                         {t("search.allCities")}
+
+              </option>
               {loadingCities && <option disabled>Loading...</option>}
               {cities.map((city) => (
                 <option key={city} value={city}>{city}</option>
@@ -173,7 +178,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
         {/* Price Level Dropdown */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 text-left">
-            Price Level
+                          {t("search.price")}
           </label>
           <div className="relative">
             <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -188,11 +193,22 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
               onKeyPress={handleKeyPress}
               className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none appearance-none bg-white cursor-pointer transition-colors dark:bg-gray-700 dark:text-white dark:border-gray-600"
             >
-              <option value="">All Prices</option>
-              <option value="1">$ - Budget</option>
-              <option value="2">$$ - Moderate</option>
-              <option value="3">$$$ - Expensive</option>
-              <option value="4">$$$$ - Luxury</option>
+              <option value="">
+              {t("search.allPrices")}
+                </option>
+              <option value="1">
+                $ -{t("search.budget")} 
+                </option>
+              <option value="2">
+                $$ - {t("search.moderate")} 
+                </option>
+              <option value="3">
+                $$$ - {t("search.expensive")} 
+                </option>
+              <option value="4">
+                $$$$ - {t("search.luxury")} 
+
+              </option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +221,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
         {/* Sort Dropdown */}
         <div className="relative">
           <label className="block text-sm font-semibold text-gray-700 dark:text-white mb-2 text-left">
-            Sort By
+            {t("sort.sortby")}
           </label>
           <div className="relative">
             <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -221,9 +237,9 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
               disabled={loadingCities}
               className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none appearance-none bg-white cursor-pointer transition-colors dark:bg-gray-700 dark:text-white dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="default">Default</option>
-              <option value="nearest">Nearest</option>
-              <option value="highRating">Highest Rating</option>
+              <option value="default">{t("sort.default")} </option>
+              <option value="nearest">{t("sort.nearest")}</option>
+              <option value="highRating">{t("sort.highestRating")}</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,7 +258,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
               className="flex-1 bg-[#ef4343] hover:bg-[#ffe1e1] hover:text-[#ef4343] disabled:bg-[#ef4343] disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 transform"
             >
               <Search className="w-5 h-5" />
-              Search
+              {t("search.button")}
             </button>
           ) : (
             hasActiveFilters && (
@@ -251,7 +267,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
               >
                 <X className="w-4 h-4" />
-                Clear
+                {t("filter.clear")}
               </button>
             )
           )}
@@ -262,18 +278,25 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
       {hasActiveFilters && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Searching for places
+                           {t("search.placeholder")}
+
             {selectedCity && (
-              <span className="font-semibold text-blue-600 dark:text-blue-400"> in {selectedCity}</span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400"> 
+                           
+               {t("search.summaryInCity")}  {selectedCity}
+               </span>
             )}
-            {selectedCity && selectedPrice && ' with'}
+            {selectedCity && selectedPrice && ' '}
             {selectedPrice && (
-              <span className="font-semibold text-green-600 dark:text-green-400"> {'$'.repeat(parseInt(selectedPrice))} price level</span>
+              <span className="font-semibold text-green-600 dark:text-green-400"> 
+              {t("search.summaryWith")}
+             {t("search.summaryPrice", { priceLevel: '$'.repeat(parseInt(selectedPrice)) })}</span>
             )}
             {(selectedCity || selectedPrice) && selectedSort !== 'default' && ', '}
             {selectedSort !== 'default' && (
               <span className="font-semibold text-purple-600 dark:text-purple-400">
-                sorted by {selectedSort === 'nearest' ? 'nearest location' : 'highest rating'}
+                
+                {t("sort.sortby")} {selectedSort === 'nearest' ?  t("sort.nearest"): t("sort.highestRating")}
               </span>
             )}
           </p>
