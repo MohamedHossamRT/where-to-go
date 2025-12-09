@@ -76,7 +76,9 @@ const resources = {
       "filter.unit.km": "km",
       "filter.clear": "Clear",
       "filter.apply": "Apply Filters",
-
+      "search.summaryInCity":"in",
+      "search.summaryWith":"with price range",
+      "search.summaryPrice": "{{priceLevel}}",
       // --- Listings Data & Table ---
       "listing.rating": "Rating",
       "listing.reviews": "reviews",
