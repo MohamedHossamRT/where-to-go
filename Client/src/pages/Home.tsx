@@ -15,7 +15,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import lightimg from "../assets/catherine-heath-dDx5sUb-ukk-unsplash.jpg"
 import darktimg from "../assets/vishwas-katti-UrQ_BS9bLXQ-unsplash.jpg"
-
+import { FilterComponent } from "@/components/FilterComponent";
 
 import { useTranslation } from "react-i18next"; // <-- Import i18n
 
@@ -26,96 +26,35 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation(); // <-- Initialize translation hook
 
-  // State
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedPrice, setSelectedPrice] = useState("");
-  const [cities, setCities] = useState<string[]>([]);
-  const [loadingCities, setLoadingCities] = useState(true);
-  const [error, setError] = useState("");
-  const [retryCount, setRetryCount] = useState(0);
+  
+ // Home.tsx - CORRECTED Logic
 
-  // Fetch cities on mount
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        setLoadingCities(true);
-        setError("");
+const handleSearch = (filters: { city: string; priceLevel: string; sortBy: string }) => {
+  const params = new URLSearchParams();
+  
+  if (filters.city) params.append("city", filters.city);
+  if (filters.priceLevel) params.append("priceLevel", filters.priceLevel);
+  
+  // --- START OF FIX: Translate the sortBy value ---
+  if (filters.sortBy && filters.sortBy !== 'default') {
+    let backendSortParam: string | null = null;
 
-        const response = await axios.get(`${API_BASE_URL}/api/places`);
-        console.log("API Response:", response.data);
-
-        // Handle API data extraction
-        let places = [];
-        if (
-          response.data.data &&
-          response.data.data.places &&
-          Array.isArray(response.data.data.places)
-        ) {
-          places = response.data.data.places;
-        } else if (Array.isArray(response.data.data)) {
-          places = response.data.data;
-        } else if (Array.isArray(response.data)) {
-          places = response.data;
-        } else if (
-          response.data.places &&
-          Array.isArray(response.data.places)
-        ) {
-          places = response.data.places;
-        }
-
-        console.log("Extracted places:", places.length, "places");
-
-        // Extract unique cities
-        const citySet = new Set<string>();
-        places.forEach((place: any) => {
-          if (
-            place &&
-            place.city &&
-            typeof place.city === "string" &&
-            place.city.trim() !== ""
-          ) {
-            citySet.add(place.city.trim());
-          }
-        });
-
-        const uniqueCities = Array.from(citySet).sort();
-        console.log("Unique cities:", uniqueCities);
-
-        setCities(uniqueCities);
-      } catch (err: any) {
-        console.error("Error fetching cities:", err);
-        // استخدام مفتاح الترجمة للفشل
-        const errorMessage =
-          err.response?.data?.message || err.message || t("common.failedLoad");
-        setError(errorMessage);
-      } finally {
-        setLoadingCities(false);
-      }
-    };
-
-    fetchCities();
-  }, [retryCount, t]);
-
-  // Retry function
-  const handleRetry = () => {
-    setRetryCount((prev) => prev + 1);
-  };
-
-  // Handle search
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (selectedCity) params.append("city", selectedCity);
-    if (selectedPrice) params.append("priceLevel", selectedPrice);
-    navigate(`/listings?${params.toString()}`);
-  };
-
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
+    if (filters.sortBy === 'nearest') {
+      // User selected 'Nearest' -> API expects 'radius'
+      backendSortParam = 'radius';
+    } else if (filters.sortBy === 'highRating') {
+      // User selected 'Highest Rating' -> API expects 'rating'
+      backendSortParam = 'rating';
     }
-  };
 
+    if (backendSortParam) {
+      params.append("sortBy", backendSortParam);
+    }
+  }
+  // --- END OF FIX ---
+
+  navigate(`/listings?${params.toString()}`);
+};
   return (
     <>
       <Header />
@@ -143,167 +82,15 @@ const Home: React.FC = () => {
             <p className="text-xl text-white/90 mb-8">
               {t("home.hero.subtitle")}
             </p>
-
-            {/* Filter Section */}
-            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-3xl mx-auto dark:bg-[#0f1729]">
-              {error && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-5 h-5 text-red-600"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="text-red-700 text-sm font-medium">
-                        {error}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleRetry}
-                      className="text-red-600 hover:text-red-800 text-sm font-semibold underline"
-                    >
-                      {t("common.retry")}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid md:grid-cols-3 gap-4">
-                {/* City Dropdown */}
-                <div className="relative">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-left dark:text-white">
-                    {t("search.city")}
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    <select
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      disabled={loadingCities}
-                      className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer transition-colors dark:text-black"
-                    >
-                      <option className="dark:text-black" value="">
-                        {t("search.allCities")}
-                      </option>
-                      {loadingCities && (
-                        <option disabled>{t("common.loading")}</option>
-                      )}
-                      {cities.map((city) => (
-                        <option
-                          className="dark:text-black"
-                          key={city}
-                          value={city}
-                        >
-                          {city}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      {loadingCities ? (
-                        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                      ) : (
-                        <svg
-                          className="w-5 h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Level Dropdown */}
-                <div className="relative">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 text-left dark:text-white">
-                    {t("search.price")}
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    <select
-                      value={selectedPrice}
-                      onChange={(e) => setSelectedPrice(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none appearance-none bg-white cursor-pointer transition-colors dark:text-black"
-                    >
-                      <option value="">{t("search.allPrices")}</option>
-                      <option value="1">$ - {t("search.budget")}</option>
-                      <option value="2">$$ - {t("search.moderate")}</option>
-                      <option value="3">$$$ - {t("search.expensive")}</option>
-                      <option value="4">$$$$ - {t("search.luxury")}</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg
-                        className="w-5 h-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Search Button */}
-                <div className="flex items-end">
-                  <button
-                    onClick={handleSearch}
-                    disabled={loadingCities}
-                    className="w-full bg-[#ef4343] hover:bg-[#ffe1e1] hover:text-[#ef4343] disabled:bg-[#ef4343] disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 transform"
-                  >
-                    <Search className="w-5 h-5" />
-                    {t("search.button")}
-                  </button>
-                </div>
-              </div>
-
-              {/* Filter Summary (Optional) - Requires missing keys in i18n.ts */}
-              {(selectedCity || selectedPrice) && (
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("search.summaryPrefix", "Searching for places")}
-                    {selectedCity && (
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">
-                        {" "}
-                        {t("search.summaryInCity", { city: selectedCity })}
-                      </span>
-                    )}
-                    {selectedCity &&
-                      selectedPrice &&
-                      t("search.summaryWith", " with")}
-                    {selectedPrice && (
-                      <span className="font-semibold text-green-600 dark:text-green-400">
-                        {" "}
-                        {t("search.summaryPrice", {
-                          priceLevel: "$".repeat(parseInt(selectedPrice)),
-                        })}
-                      </span>
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
+{/* Filter Section */}
+            <FilterComponent
+              onSearch={ handleSearch}
+              showSearchButton={true}
+              variant="home"
+              apiBaseUrl={API_BASE_URL}
+            />
+         {/* 
+          */}
           </div>
         </div>
 

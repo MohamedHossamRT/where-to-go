@@ -1,6 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -26,7 +23,7 @@ import imgBudget from "../assets/budgetprice.jpg";
 import imgModerate from "../assets/moderate.jpg";
 import imgExpensive from "../assets/expensive.jpg";
 import imgLuxury from "../assets/luxury2.jpg";
-
+import { FilterComponent } from "@/components/FilterComponent";
 interface Restaurant {
   _id: string;
   name: string;
@@ -60,7 +57,19 @@ const Listings: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState(20);
 
   const cityFilter = searchParams.get("city");
-  const priceLevelFilter = searchParams.get("priceLevel");
+const priceLevelFilter = searchParams.get("priceLevel");
+const sortByParam = searchParams.get("sortBy");
+
+// Sync sortOption with URL parameter
+useEffect(() => {
+  if (sortByParam === "radius") {
+    setSortOption("nearest");
+  } else if (sortByParam === "rating") {
+    setSortOption("highRating");
+  } else {
+    setSortOption("default");
+  }
+}, [sortByParam]);
 
   const { isLoading, error } = useQuery({
     queryKey: ["listings", cityFilter, priceLevelFilter, sortOption],
@@ -239,22 +248,54 @@ const Listings: React.FC = () => {
     });
   };
 
-  const handleSort = (option: string) => {
-    setSortOption(option);
-  };
 
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 8);
-  };
 
-  const handleClearFilters = () => {
-    navigate("/listings");
-    setVisibleCount(20);
-    setSortOption("default");
-  };
 
-  const hasActiveFilters = cityFilter || priceLevelFilter;
- // 
+ 
+
+
+const hasActiveFilters = cityFilter || priceLevelFilter || sortOption !== 'default';
+
+const handleFilterChange = (filters: { city: string; priceLevel: string; sortBy: string }) => {
+    // Update sort state immediately (This is fine, as it reflects user's selection)
+    setSortOption(filters.sortBy); 
+    
+    // Build URL params
+    const params = new URLSearchParams();
+    
+    // 1. Add City and Price
+    if (filters.city) params.append("city", filters.city);
+    if (filters.priceLevel) params.append("priceLevel", filters.priceLevel);
+    
+    // 2. CRITICAL FIX: Translate User-Facing Sort to API/URL Sort
+    if (filters.sortBy && filters.sortBy !== 'default') {
+        let backendSortParam: string | null = null;
+        
+        if (filters.sortBy === 'nearest') {
+          backendSortParam = 'radius';
+        } else if (filters.sortBy === 'highRating') {
+          backendSortParam = 'rating';
+        }
+        
+        // Append the translated value to the URL
+        if (backendSortParam) {
+          params.append("sortBy", backendSortParam);
+        }
+    }
+    
+    // Navigate to update URL (this will trigger useQuery to refetch)
+    navigate(`/listings?${params.toString()}`, { replace: true });
+};
+
+const handleLoadMore = () => {
+  setVisibleCount((prev) => prev + 8);
+};
+
+const handleClearFilters = () => {
+  navigate("/listings");
+  setVisibleCount(20);
+  setSortOption("default");
+};
       const getPriceImage = (priceLevel?: number) => {
   switch (priceLevel) {
     case 1:
@@ -302,39 +343,27 @@ const Listings: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <div className="flex items-center justify-center gap-6 mt-7 flex-wrap px-4">
-        {hasActiveFilters && (
-          <button
-            onClick={handleClearFilters}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-          >
-            <X className="w-4 h-4" />
-            {t("clearFilters")}
-          </button>
-        )}
-
-        <select
-          className="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ef4343] dark:bg-white dark:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          value={sortOption}
-          onChange={(e) => handleSort(e.target.value)}
-          disabled={isLoading}
-        >
-          <option value="default">{t("sort.default")}</option>
-          <option value="nearest">{t("sort.nearest")}</option>
-          <option value="highRating">{t("sort.highestRating")}</option>
-        </select>
-
-        <div className="flex gap-2">
+<div className="max-w-6xl mx-auto px-4 mt-7">
+        <FilterComponent
+  onSearch={handleFilterChange}
+  showSearchButton={true}
+  initialCity={cityFilter || ''}
+  initialPrice={priceLevelFilter || ''}
+  initialSort={sortOption}
+  variant="listings"
+  apiBaseUrl={API_BASE_URL}
+   />
+        
+        {/* View Type Buttons */}
+        <div className="flex justify-center gap-2 mt-4">
           <button
             onClick={() => setViewType("grid")}
             disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed
-      ${
-        viewType === "grid"
-          ? "bg-[#ef4343] text-white"
-          : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343] dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
-      }`}
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed ${
+              viewType === "grid"
+                ? "bg-[#ef4343] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343] dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -354,12 +383,11 @@ const Listings: React.FC = () => {
           <button
             onClick={() => setViewType("list")}
             disabled={isLoading}
-            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed
-      ${
-        viewType === "list"
-          ? "bg-[#ef4343] text-white"
-          : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343] dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
-      }`}
+            className={`p-3 rounded-xl shadow-md transition-all duration-200 cursor-pointer hidden sm:flex disabled:opacity-50 disabled:cursor-not-allowed ${
+              viewType === "list"
+                ? "bg-[#ef4343] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-[#ffe1e1] hover:text-[#ef4343] dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600"
+            }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
