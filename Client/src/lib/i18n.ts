@@ -62,6 +62,7 @@ const resources = {
       "search.moderate": "Moderate",
       "search.expensive": "Expensive",
       "search.luxury": "Luxury",
+      "sort.sortby": "sort by",
       "search.button": "Search",
       "sort.default": "Default",
       "sort.nearest": "Nearest",
@@ -75,11 +76,9 @@ const resources = {
       "filter.unit.km": "km",
       "filter.clear": "Clear",
       "filter.apply": "Apply Filters",
-      "search.summaryPrefix": "Searching for places",
-      "search.summaryInCity": "in {{city}}",
-      "search.summaryWith": " with level ",
+      "search.summaryInCity": "in",
+      "search.summaryWith": "with price range",
       "search.summaryPrice": "{{priceLevel}}",
-
       // --- Listings Data & Table ---
       "listing.rating": "Rating",
       "listing.reviews": "reviews",
@@ -504,7 +503,7 @@ const resources = {
       "stats.citiesAvailable": "مدن متاحة",
       "stats.exploreDestinations": "استكشف وجهات حول العالم",
       // --- Search & Filters ---
-      "search.placeholder": "ابحث عن الأماكن...",
+      "search.placeholder": "البحث عن اماكن...",
       "search.filters": "التصفية",
       "search.category": "الفئة",
       "search.price": "نطاق السعر",
@@ -521,6 +520,7 @@ const resources = {
       "search.expensive": "غالٍ",
       "search.luxury": "فاخر",
       "search.button": "بحث",
+      "sort.sortby": "ترتيب حسب",
       "sort.default": "افتراضي",
       "sort.nearest": "الأقرب",
       "sort.highestRating": "الأعلى تقييمًا",
@@ -534,7 +534,7 @@ const resources = {
       "filter.clear": "مسح",
       "filter.apply": "تطبيق عوامل التصفية",
       "search.summaryPrefix": "البحث عن أماكن",
-      "search.summaryInCity": "في {{city}}",
+      "search.summaryInCity": " في",
       "search.summaryWith": " مع مستوى سعر",
       "search.summaryPrice": "{{priceLevel}}",
 

@@ -121,11 +121,11 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground dark:text-gray-400">
               <li className="flex items-start space-x-2">
                 <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                <span>4517 Washington Ave. Chester, Kentucky 39495</span>
+                <span>4517 Roushdy. Alexandria, Egypt</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>(603) 555-0123</span>
+                <span>(03) 111-2222</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 flex-shrink-0" />
