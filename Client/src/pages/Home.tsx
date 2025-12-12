@@ -13,8 +13,8 @@ import {
 import axios from "axios";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import lightimg from "../assets/catherine-heath-dDx5sUb-ukk-unsplash.jpg"
-import darktimg from "../assets/vishwas-katti-UrQ_BS9bLXQ-unsplash.jpg"
+import lightimg from "../assets/hero-light.jpg"
+import darktimg from "../assets/hero-dark.jpg"
 import { FilterComponent } from "@/components/FilterComponent";
 
 import { useTranslation } from "react-i18next"; // <-- Import i18n

@@ -19,10 +19,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import imgBudget from "../assets/budgetprice.jpg";
-import imgModerate from "../assets/moderate.jpg";
-import imgExpensive from "../assets/expensive.jpg";
-import imgLuxury from "../assets/luxury2.jpg";
+import imgBudget from "../assets/Cardimg.png";
+import imgModerate from "../assets/Cardimg.png";
+import imgExpensive from "../assets/Cardimg.png";
+import imgLuxury from "../assets/Cardimg.png";
 import { FilterComponent } from "@/components/FilterComponent";
 interface Restaurant {
   _id: string;
