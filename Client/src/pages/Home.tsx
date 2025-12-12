@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import lightimg from "../assets/hero-light.jpg"
+import lightimg from "../assets/hero-dark.jpg"
 import darktimg from "../assets/hero-dark.jpg"
 import { FilterComponent } from "@/components/FilterComponent";
 
