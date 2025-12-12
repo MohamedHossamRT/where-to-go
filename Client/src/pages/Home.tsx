@@ -63,13 +63,13 @@ const handleSearch = (filters: { city: string; priceLevel: string; sortBy: strin
         <div className="relative h-[600px] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" />
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-40 dark:opacity-0"
+            className="absolute inset-0 bg-cover bg-center opacity-80 dark:opacity-0"
             style={{ backgroundImage: `url(${lightimg})` }}
           />
            {/* Dark Mode Image */}
            <div
               
-              className="absolute inset-0 bg-cover bg-center opacity-40 hidden dark:block"
+              className="absolute inset-0 bg-cover bg-center opacity-75 hidden dark:block"
             style={{ backgroundImage: `url(${darktimg})` }}
           />
 
